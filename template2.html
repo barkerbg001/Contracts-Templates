@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ironclad 2026 Experience</title>
+    <title>Advanced Contract Interface</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -51,7 +51,7 @@
         <aside id="sidebar" class="sidebar-expanded bg-white border-r border-gray-200 flex flex-col transition-all duration-300">
             <div class="p-4 border-b border-gray-200">
                 <div class="flex items-center justify-between">
-                    <h1 class="text-xl font-bold text-gray-900" id="logo-text">Ironclad</h1>
+                    <h1 class="text-xl font-bold text-gray-900" id="logo-text">Contracts</h1>
                     <button id="sidebar-toggle" class="p-1 hover:bg-gray-100 rounded">
                         <i data-lucide="menu" class="w-5 h-5 text-gray-600"></i>
                     </button>
@@ -528,7 +528,7 @@
                                             id="generated-link" 
                                             readonly
                                             class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
-                                            value="https://ironclad.app/clickwrap/abc123xyz"
+                                            value="https://contracts.app/clickwrap/abc123xyz"
                                         >
                                         <button id="copy-link" class="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2">
                                             <i data-lucide="copy" class="w-4 h-4"></i>
@@ -726,7 +726,7 @@
             const agreementType = document.getElementById('agreement-type').value;
             const title = document.getElementById('agreement-title').value || 'Standard Agreement';
             const randomId = Math.random().toString(36).substring(2, 11);
-            const link = `https://ironclad.app/clickwrap/${randomId}`;
+            const link = `https://contracts.app/clickwrap/${randomId}`;
             
             generatedLink.value = link;
             generatedLinkContainer.classList.remove('hidden');
