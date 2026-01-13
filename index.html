@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Management Platform</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background-color: #F9FAFB;
+            color: #111827;
+        }
+        
+        .sidebar-icon {
+            transition: all 0.2s ease;
+        }
+        
+        .sidebar-icon:hover {
+            transform: translateX(2px);
+        }
+        
+        .sidebar-icon.active {
+            color: #0052FF;
+        }
+        
+        .card {
+            transition: all 0.2s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .workflow-step {
+            transition: all 0.3s ease;
+        }
+        
+        .workflow-step.active {
+            border-color: #0052FF;
+            background-color: #EFF6FF;
+        }
+        
+        .workflow-step.completed {
+            border-color: #10B981;
+            background-color: #F0FDF4;
+        }
+        
+        .view {
+            display: none;
+        }
+        
+        .view.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+    <!-- Sidebar Navigation -->
+    <aside class="w-20 bg-white border-r border-gray-200 flex flex-col items-center py-6 space-y-8">
+        <div class="flex flex-col items-center space-y-8">
+            <!-- Logo/Icon -->
+            <div class="w-10 h-10 bg-[#0052FF] rounded-lg flex items-center justify-center">
+                <i data-lucide="file-text" class="w-6 h-6 text-white"></i>
+            </div>
+            
+            <!-- Navigation Icons -->
+            <nav class="flex flex-col space-y-6">
+                <button class="sidebar-icon active" data-view="dashboard" title="Dashboard">
+                    <i data-lucide="layout-dashboard" class="w-6 h-6"></i>
+                </button>
+                <button class="sidebar-icon" data-view="workflows" title="Workflows">
+                    <i data-lucide="workflow" class="w-6 h-6"></i>
+                </button>
+                <button class="sidebar-icon" data-view="repository" title="Repository">
+                    <i data-lucide="folder" class="w-6 h-6"></i>
+                </button>
+                <button class="sidebar-icon" data-view="events" title="Events">
+                    <i data-lucide="calendar" class="w-6 h-6"></i>
+                </button>
+            </nav>
+        </div>
+    </aside>
+    
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 px-8 py-4">
+            <div class="flex items-center justify-between">
+                <h1 class="text-2xl font-semibold text-gray-900" id="page-title">Dashboard</h1>
+                <div class="flex items-center space-x-4">
+                    <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+                        <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
+                    </button>
+                    <div class="w-8 h-8 bg-[#0052FF] rounded-full flex items-center justify-center">
+                        <span class="text-white text-sm font-medium">JD</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Content Views -->
+        <div class="flex-1 overflow-y-auto p-8">
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="view active">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Active Workflows Card -->
+                    <div class="card bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Active Workflows</h3>
+                            <i data-lucide="workflow" class="w-5 h-5 text-gray-400"></i>
+                        </div>
+                        <div class="flex items-baseline">
+                            <p class="text-3xl font-semibold text-gray-900">12</p>
+                            <span class="ml-2 text-sm text-green-600 font-medium">+3 this week</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <p class="text-xs text-gray-500">5 in review</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Pending Signatures Card -->
+                    <div class="card bg-white rounded-lg p-6 shadow-sm border-gray-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">Pending Signatures</h3>
+                            <i data-lucide="pen-tool" class="w-5 h-5 text-gray-400"></i>
+                        </div>
+                        <div class="flex items-baseline">
+                            <p class="text-3xl font-semibold text-gray-900">8</p>
+                            <span class="ml-2 text-sm text-orange-600 font-medium">2 urgent</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <p class="text-xs text-gray-500">Awaiting your action</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Contract Volume Card -->
+                    <div class="card bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wide">This Month</h3>
+                            <i data-lucide="trending-up" class="w-5 h-5 text-gray-400"></i>
+                        </div>
+                        <div class="flex items-baseline">
+                            <p class="text-3xl font-semibold text-gray-900">47</p>
+                            <span class="ml-2 text-sm text-blue-600 font-medium">+12%</span>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <p class="text-xs text-gray-500">Contracts processed</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chart Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <div class="card bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Contract Volume</h3>
+                        <div style="height: 250px; position: relative;">
+                            <canvas id="contractChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="card bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3 pb-4 border-b border-gray-100 last:border-0">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="file-check" class="w-4 h-4 text-[#0052FF]"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900">NDA Agreement signed</p>
+                                    <p class="text-xs text-gray-500 mt-1">Acme Corp • 2 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3 pb-4 border-b border-gray-100 last:border-0">
+                                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="check-circle" class="w-4 h-4 text-green-600"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900">Service Agreement approved</p>
+                                    <p class="text-xs text-gray-500 mt-1">TechStart Inc • 5 hours ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3 pb-4 border-b border-gray-100 last:border-0">
+                                <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="clock" class="w-4 h-4 text-orange-600"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900">Partnership Agreement pending review</p>
+                                    <p class="text-xs text-gray-500 mt-1">Global Partners • 1 day ago</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="edit" class="w-4 h-4 text-purple-600"></i>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <p class="text-sm font-medium text-gray-900">Employment Contract updated</p>
+                                    <p class="text-xs text-gray-500 mt-1">HR Department • 2 days ago</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Workflows View -->
+            <div id="workflows-view" class="view">
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-2">Contract Workflow</h2>
+                    <p class="text-sm text-gray-500">Service Agreement - Acme Corporation</p>
+                </div>
+                
+                <!-- Workflow Steps -->
+                <div class="mb-6 bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <div class="workflow-step completed flex items-center space-x-3 p-4 rounded-lg border-2 border-green-200 bg-green-50">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                <i data-lucide="check" class="w-5 h-5 text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Draft</p>
+                                <p class="text-xs text-gray-500">Completed</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1 h-0.5 bg-green-200 mx-2"></div>
+                        
+                        <div class="workflow-step completed flex items-center space-x-3 p-4 rounded-lg border-2 border-green-200 bg-green-50">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                <i data-lucide="check" class="w-5 h-5 text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Negotiation</p>
+                                <p class="text-xs text-gray-500">Completed</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1 h-0.5 bg-blue-200 mx-2"></div>
+                        
+                        <div class="workflow-step active flex items-center space-x-3 p-4 rounded-lg border-2 border-[#0052FF] bg-blue-50">
+                            <div class="w-8 h-8 bg-[#0052FF] rounded-full flex items-center justify-center">
+                                <i data-lucide="file-text" class="w-5 h-5 text-white"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Review</p>
+                                <p class="text-xs text-blue-600">In Progress</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1 h-0.5 bg-gray-200 mx-2"></div>
+                        
+                        <div class="workflow-step flex items-center space-x-3 p-4 rounded-lg border-2 border-gray-200 bg-gray-50">
+                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                <i data-lucide="pen-tool" class="w-5 h-5 text-gray-500"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-400">Signature</p>
+                                <p class="text-xs text-gray-400">Pending</p>
+                            </div>
+                        </div>
+                        
+                        <div class="flex-1 h-0.5 bg-gray-200 mx-2"></div>
+                        
+                        <div class="workflow-step flex items-center space-x-3 p-4 rounded-lg border-2 border-gray-200 bg-gray-50">
+                            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+                                <i data-lucide="archive" class="w-5 h-5 text-gray-500"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-400">Archive</p>
+                                <p class="text-xs text-gray-400">Pending</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Split Screen -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Document Preview -->
+                    <div class="lg:col-span-2 bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="bg-gray-50 border-b border-gray-200 px-6 py-3 flex items-center justify-between">
+                            <h3 class="text-sm font-medium text-gray-900">Document Preview</h3>
+                            <div class="flex items-center space-x-2">
+                                <button class="p-1.5 hover:bg-gray-200 rounded transition-colors">
+                                    <i data-lucide="zoom-in" class="w-4 h-4 text-gray-600"></i>
+                                </button>
+                                <button class="p-1.5 hover:bg-gray-200 rounded transition-colors">
+                                    <i data-lucide="download" class="w-4 h-4 text-gray-600"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="p-8 bg-gray-50 min-h-[600px]">
+                            <div class="bg-white shadow-lg mx-auto max-w-2xl p-12 min-h-[500px]">
+                                <div class="space-y-4">
+                                    <h1 class="text-3xl font-bold text-gray-900 mb-8">SERVICE AGREEMENT</h1>
+                                    <div class="space-y-6 text-sm text-gray-700 leading-relaxed">
+                                        <p><strong>This Service Agreement</strong> ("Agreement") is entered into on [Date] between Acme Corporation ("Client") and Service Provider ("Provider").</p>
+                                        <div>
+                                            <h2 class="font-semibold text-gray-900 mb-2">1. SERVICES</h2>
+                                            <p>The Provider agrees to deliver the following services...</p>
+                                        </div>
+                                        <div>
+                                            <h2 class="font-semibold text-gray-900 mb-2">2. TERM</h2>
+                                            <p>This Agreement shall commence on [Start Date] and continue for a period of [Duration]...</p>
+                                        </div>
+                                        <div>
+                                            <h2 class="font-semibold text-gray-900 mb-2">3. COMPENSATION</h2>
+                                            <p>Client agrees to pay Provider $[Amount] per [Period]...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Metadata/Approval Sidebar -->
+                    <div class="space-y-6">
+                        <!-- Contract Details -->
+                        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                            <h3 class="text-sm font-semibold text-gray-900 mb-4">Contract Details</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <p class="text-xs text-gray-500 mb-1">Contract Type</p>
+                                    <p class="text-sm font-medium text-gray-900">Service Agreement</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 mb-1">Counterparty</p>
+                                    <p class="text-sm font-medium text-gray-900">Acme Corporation</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 mb-1">Value</p>
+                                    <p class="text-sm font-medium text-gray-900">$125,000</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 mb-1">Start Date</p>
+                                    <p class="text-sm font-medium text-gray-900">March 1, 2024</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-gray-500 mb-1">Status</p>
+                                    <span class="status-pill bg-blue-100 text-blue-700">In Review</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Approval Actions -->
+                        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                            <h3 class="text-sm font-semibold text-gray-900 mb-4">Actions</h3>
+                            <div class="space-y-3">
+                                <button class="w-full bg-[#0052FF] text-white py-2.5 px-4 rounded-lg font-medium hover:bg-[#0040CC] transition-colors">
+                                    Approve
+                                </button>
+                                <button class="w-full bg-white border border-gray-300 text-gray-700 py-2.5 px-4 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                                    Request Changes
+                                </button>
+                                <button class="w-full bg-white border border-red-300 text-red-700 py-2.5 px-4 rounded-lg font-medium hover:bg-red-50 transition-colors">
+                                    Reject
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Reviewers -->
+                        <div class="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+                            <h3 class="text-sm font-semibold text-gray-900 mb-4">Reviewers</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                        <i data-lucide="check" class="w-4 h-4 text-green-600"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">Sarah Johnson</p>
+                                        <p class="text-xs text-gray-500">Legal • Approved</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i data-lucide="clock" class="w-4 h-4 text-blue-600"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">Michael Chen</p>
+                                        <p class="text-xs text-gray-500">Finance • Pending</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-3">
+                                    <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
+                                        <i data-lucide="user" class="w-4 h-4 text-gray-400"></i>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-sm font-medium text-gray-900">You</p>
+                                        <p class="text-xs text-gray-500">Operations • Pending</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Repository View -->
+            <div id="repository-view" class="view">
+                <div class="mb-6 flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-2">Contract Repository</h2>
+                        <p class="text-sm text-gray-500">All your contracts in one place</p>
+                    </div>
+                    <button class="bg-[#0052FF] text-white py-2 px-4 rounded-lg font-medium hover:bg-[#0040CC] transition-colors flex items-center space-x-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>New Contract</span>
+                    </button>
+                </div>
+                
+                <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex-1">
+                                <input type="text" placeholder="Search contracts..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent">
+                            </div>
+                            <select class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0052FF]">
+                                <option>All Types</option>
+                                <option>Service Agreement</option>
+                                <option>NDA</option>
+                                <option>Employment Contract</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="divide-y divide-gray-200">
+                        <div class="p-6 hover:bg-gray-50 transition-colors cursor-pointer">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-[#0052FF]"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">Service Agreement - Acme Corp</p>
+                                        <p class="text-sm text-gray-500 text-sm">Last updated 2 days ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <span class="status-pill bg-blue-100 text-blue-700">Active</span>
+                                    <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 hover:bg-gray-50 transition-colors cursor-pointer">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                        <i data-lucide="file-check" class="w-5 h-5 text-green-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">NDA - TechStart Inc</p>
+                                        <p class="text-sm text-gray-500">Signed 1 week ago</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <span class="status-pill bg-green-100 text-green-700">Signed</span>
+                                    <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-6 hover:bg-gray-50 transition-colors cursor-pointer">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                                        <i data-lucide="file-clock" class="w-5 h-5 text-orange-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-gray-900">Partnership Agreement - Global Partners</p>
+                                        <p class="text-sm text-gray-500">Pending review</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <span class="status-pill bg-orange-100 text-orange-700">Pending</span>
+                                    <i data-lucide="chevron-right" class="w-5 h-5 text-gray-400"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Events View -->
+            <div id="events-view" class="view">
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-2">Upcoming Events</h2>
+                    <p class="text-sm text-gray-500">Contract renewals and obligation deadlines</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <!-- Contract Renewals Section -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                            <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">Contract Renewals</h3>
+                        </div>
+                        <div class="divide-y divide-gray-200">
+                            <div class="p-6 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <i data-lucide="alert-circle" class="w-6 h-6 text-red-600"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Service Agreement - Acme Corp</p>
+                                            <p class="text-sm text-gray-500 mt-1">Renewal deadline: March 15, 2024</p>
+                                            <p class="text-xs text-gray-400 mt-1">Expires in 5 days</p>
+                                        </div>
+                                    </div>
+                                    <span class="status-pill bg-red-100 text-red-700">Urgent</span>
+                                </div>
+                            </div>
+                            <div class="p-6 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <i data-lucide="calendar" class="w-6 h-6 text-orange-600"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">NDA - TechStart Inc</p>
+                                            <p class="text-sm text-gray-500 mt-1">Renewal deadline: April 1, 2024</p>
+                                            <p class="text-xs text-gray-400 mt-1">Expires in 22 days</p>
+                                        </div>
+                                    </div>
+                                    <span class="status-pill bg-orange-100 text-orange-700">Upcoming</span>
+                                </div>
+                            </div>
+                            <div class="p-6 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <i data-lucide="calendar" class="w-6 h-6 text-blue-600"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Partnership Agreement - Global Partners</p>
+                                            <p class="text-sm text-gray-500 mt-1">Renewal deadline: May 10, 2024</p>
+                                            <p class="text-xs text-gray-400 mt-1">Expires in 42 days</p>
+                                        </div>
+                                    </div>
+                                    <span class="status-pill bg-blue-100 text-blue-700">Upcoming</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Obligation Deadlines Section -->
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                            <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide">Obligation Deadlines</h3>
+                        </div>
+                        <div class="divide-y divide-gray-200">
+                            <div class="p-6 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <i data-lucide="alert-circle" class="w-6 h-6 text-red-600"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Quarterly Report Submission</p>
+                                            <p class="text-sm text-gray-500 mt-1">Due: March 12, 2024</p>
+                                            <p class="text-xs text-gray-400 mt-1">Service Agreement - Acme Corp</p>
+                                        </div>
+                                    </div>
+                                    <span class="status-pill bg-red-100 text-red-700">Urgent</span>
+                                </div>
+                            </div>
+                            <div class="p-6 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <i data-lucide="file-text" class="w-6 h-6 text-orange-600"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Payment Milestone</p>
+                                            <p class="text-sm text-gray-500 mt-1">Due: March 20, 2024</p>
+                                            <p class="text-xs text-gray-400 mt-1">Partnership Agreement - Global Partners</p>
+                                        </div>
+                                    </div>
+                                    <span class="status-pill bg-orange-100 text-orange-700">Upcoming</span>
+                                </div>
+                            </div>
+                            <div class="p-6 hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-start space-x-4">
+                                        <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                            <i data-lucide="check-circle" class="w-6 h-6 text-green-600"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium text-gray-900">Monthly Compliance Review</p>
+                                            <p class="text-sm text-gray-500 mt-1">Completed: March 1, 2024</p>
+                                            <p class="text-xs text-gray-400 mt-1">NDA - TechStart Inc</p>
+                                        </div>
+                                    </div>
+                                    <span class="status-pill bg-green-100 text-green-700">Completed</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+        
+        // Tab Switching Logic
+        const sidebarButtons = document.querySelectorAll('.sidebar-icon');
+        const views = document.querySelectorAll('.view');
+        const pageTitle = document.getElementById('page-title');
+        
+        const viewTitles = {
+            'dashboard': 'Dashboard',
+            'workflows': 'Workflows',
+            'repository': 'Repository',
+            'events': 'Events'
+        };
+        
+        sidebarButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const targetView = button.getAttribute('data-view');
+                
+                // Update active sidebar button
+                sidebarButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Update active view
+                views.forEach(view => view.classList.remove('active'));
+                document.getElementById(`${targetView}-view`).classList.add('active');
+                
+                // Update page title
+                pageTitle.textContent = viewTitles[targetView];
+                
+                // Reinitialize icons for the new view
+                lucide.createIcons();
+            });
+        });
+        
+        // Initialize Chart.js
+        const ctx = document.getElementById('contractChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Contracts',
+                        data: [32, 38, 47, 42, 45, 50],
+                        backgroundColor: '#0052FF',
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#F3F4F6'
+                            },
+                            ticks: {
+                                color: '#6B7280'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: '#6B7280'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
