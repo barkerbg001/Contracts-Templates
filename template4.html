@@ -727,7 +727,8 @@
                                                         01-Jan-2025 → 31-Dec-2025</div>
                                                 </div>
                                                 <div style="margin-top:8px;">
-                                                    <button class="button-primary">View</button>
+                                                    <button class="button-primary"
+                                                        onclick="switchView('create-contract')">View</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -763,7 +764,8 @@
                                                         value: AUD 420,000</div>
                                                 </div>
                                                 <div style="margin-top:8px;">
-                                                    <button class="button-primary">View</button>
+                                                    <button class="button-primary"
+                                                        onclick="switchView('create-contract')">View</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -807,7 +809,8 @@
                                                         Review: 15-Mar-2026</div>
                                                 </div>
                                                 <div style="margin-top:8px;">
-                                                    <button class="button-primary">View</button>
+                                                    <button class="button-primary"
+                                                        onclick="switchView('create-contract')">View</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -836,7 +839,8 @@
                                                         Pending</div>
                                                 </div>
                                                 <div style="margin-top:8px;">
-                                                    <button class="button-primary">View</button>
+                                                    <button class="button-primary"
+                                                        onclick="switchView('create-contract')">View</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -867,7 +871,12 @@
                                         <div class="workflow-subtitle">Status: Awaiting Signature • Due: 15 Jan 2026
                                         </div>
                                     </div>
-                                    <button class="button-primary">Open</button>
+                                    <div class="flex gap-2">
+                                        <button class="button-primary" style="background-color: #3b82f6;"
+                                            onclick="switchView('create-workflow')">View</button>
+                                        <button class="button-primary">Approve</button>
+                                        <button class="button-secondary">Reject</button>
+                                    </div>
                                 </div>
 
                                 <div class="workflow-item">
@@ -877,7 +886,12 @@
                                         </div>
                                         <div class="workflow-subtitle">Status: Pending Review • Due: 20 Jan 2026</div>
                                     </div>
-                                    <button class="button-primary">Open</button>
+                                    <div class="flex gap-2">
+                                        <button class="button-primary" style="background-color: #3b82f6;"
+                                            onclick="switchView('create-workflow')">View</button>
+                                        <button class="button-primary">Approve</button>
+                                        <button class="button-secondary">Reject</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -894,7 +908,8 @@
                                         <div class="workflow-subtitle">Contract: NDA - Acme • Assigned: Legal</div>
                                         <div class="workflow-subtitle">Status: Signed • Completed: 05 Jan 2026</div>
                                     </div>
-                                    <button class="button-primary">View</button>
+                                    <button class="button-primary" style="background-color: #3b82f6;"
+                                        onclick="switchView('create-workflow')">View</button>
                                 </div>
 
                                 <div class="workflow-item">
@@ -904,7 +919,8 @@
                                         </div>
                                         <div class="workflow-subtitle">Status: Review Scheduled • 22 Jan 2026</div>
                                     </div>
-                                    <button class="button-primary">View</button>
+                                    <button class="button-primary" style="background-color: #3b82f6;"
+                                        onclick="switchView('create-workflow')">View</button>
                                 </div>
 
                                 <div class="workflow-item">
@@ -914,7 +930,8 @@
                                         </div>
                                         <div class="workflow-subtitle">Status: Reminder • 28 Jan 2026</div>
                                     </div>
-                                    <button class="button-primary">View</button>
+                                    <button class="button-primary" style="background-color: #3b82f6;"
+                                        onclick="switchView('create-workflow')">View</button>
                                 </div>
 
                                 <div class="workflow-item">
@@ -923,7 +940,8 @@
                                         <div class="workflow-subtitle">Contract: Beta • Assigned: Project Lead</div>
                                         <div class="workflow-subtitle">Status: Scheduled • 08 Jan 2026</div>
                                     </div>
-                                    <button class="button-primary">View</button>
+                                    <button class="button-primary" style="background-color: #3b82f6;"
+                                        onclick="switchView('create-workflow')">View</button>
                                 </div>
                             </div>
                         </div>
@@ -940,7 +958,8 @@
                                         <div class="workflow-subtitle">Contract: IP-Lic-88 • Assigned: Legal</div>
                                         <div class="workflow-subtitle">Status: Approved • Approved: 02 Jan 2026</div>
                                     </div>
-                                    <button class="button-primary">View</button>
+                                    <button class="button-primary" style="background-color: #3b82f6;"
+                                        onclick="switchView('create-workflow')">View</button>
                                 </div>
                             </div>
                         </div>
@@ -957,7 +976,8 @@
                                         <div class="workflow-subtitle">Contract: SLA-011 • Assigned: Product</div>
                                         <div class="workflow-subtitle">Status: Rejected • Reason: Scope mismatch</div>
                                     </div>
-                                    <button class="button-primary">View</button>
+                                    <button class="button-primary" style="background-color: #3b82f6;"
+                                        onclick="switchView('create-workflow')">View</button>
                                 </div>
                             </div>
                         </div>
@@ -2146,6 +2166,7 @@
                 const btn = document.createElement('button');
                 btn.className = 'button-primary';
                 btn.textContent = 'View';
+                btn.onclick = () => switchView('create-event');
                 btnWrap.appendChild(btn);
 
                 right.appendChild(type);
