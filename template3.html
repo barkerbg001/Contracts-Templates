@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Intelligence Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background-color: #F0F2F5;
+        }
+        
+        .sidebar {
+            background-color: #1A202C;
+            color: #E2E8F0;
+        }
+        
+        .sidebar-nav-item {
+            font-size: 13px;
+            padding: 10px 12px;
+            transition: all 0.2s;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-nav-item:hover {
+            background-color: #2D3748;
+        }
+        
+        .sidebar-nav-item.active {
+            background-color: #0078D4;
+            border-left-color: #0078D4;
+            color: #FFFFFF;
+        }
+        
+        .kpi-tile {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid #E2E8F0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .kpi-tile:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.2s;
+        }
+        
+        .kpi-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1A202C;
+            margin: 8px 0;
+        }
+        
+        .kpi-label {
+            font-size: 12px;
+            color: #718096;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .kpi-change {
+            font-size: 12px;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+        
+        .risk-high {
+            color: #DC2626;
+        }
+        
+        .risk-medium {
+            color: #F59E0B;
+        }
+        
+        .risk-low {
+            color: #10B981;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        .status-active {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .status-pending {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .status-overdue {
+            background-color: #FEE2E2;
+            color: #7F1D1D;
+        }
+        
+        .status-at-risk {
+            background-color: #DBEAFE;
+            color: #0C2340;
+        }
+        
+        .table-row {
+            font-size: 13px;
+            border-bottom: 1px solid #E2E8F0;
+            transition: background-color 0.15s;
+        }
+        
+        .table-row:hover {
+            background-color: #F7FAFC;
+        }
+        
+        .metadata-tag {
+            display: inline-block;
+            background-color: #DBEAFE;
+            color: #0C2340;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            margin-right: 4px;
+            margin-bottom: 2px;
+        }
+        
+        .workflow-badge {
+            background-color: #F3E8FF;
+            color: #6B21A8;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 4px;
+        }
+        
+        .section-hidden {
+            display: none;
+        }
+        
+        .section-visible {
+            display: block;
+        }
+        
+        .top-bar {
+            background: white;
+            border-bottom: 1px solid #E2E8F0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        }
+        
+        .sla-timer {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        
+        .sla-green {
+            background-color: #D1FAE5;
+            color: #065F46;
+        }
+        
+        .sla-yellow {
+            background-color: #FEF3C7;
+            color: #92400E;
+        }
+        
+        .sla-red {
+            background-color: #FEE2E2;
+            color: #7F1D1D;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 16px 0;
+        }
+        
+        .obligation-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: white;
+            border: 1px solid #E2E8F0;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        
+        .obligation-item:hover {
+            background-color: #F7FAFC;
+        }
+        
+        .filter-chip {
+            display: inline-block;
+            background-color: white;
+            border: 1px solid #CBD5E0;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-right: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-chip:hover {
+            background-color: #0078D4;
+            color: white;
+            border-color: #0078D4;
+        }
+        
+        .filter-chip.active {
+            background-color: #0078D4;
+            color: white;
+            border-color: #0078D4;
+        }
+    </style>
+</head>
+<body>
+    <div class="flex h-screen bg-gray-50">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar w-64 overflow-y-auto border-r border-gray-700">
+            <div class="p-6 border-b border-gray-700">
+                <h1 class="text-lg font-bold text-white flex items-center gap-2">
+                    <div class="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
+                        <i data-lucide="briefcase" class="w-5 h-5 text-white"></i>
+                    </div>
+                    Contract Intelligence
+                </h1>
+            </div>
+            
+            <div class="p-4">
+                <p class="text-xs text-gray-400 uppercase font-semibold px-2 mb-4">Navigation</p>
+                <div class="sidebar-nav-item active" data-section="dashboard">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="gauge" class="w-4 h-4"></i>
+                        <span>Intelligence Dashboard</span>
+                    </div>
+                </div>
+                <div class="sidebar-nav-item" data-section="obligations">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="checklist" class="w-4 h-4"></i>
+                        <span>Obligation Monitor</span>
+                    </div>
+                </div>
+                <div class="sidebar-nav-item" data-section="repository">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="archive" class="w-4 h-4"></i>
+                        <span>Global Repository</span>
+                    </div>
+                </div>
+                <div class="sidebar-nav-item" data-section="workflows">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="workflow" class="w-4 h-4"></i>
+                        <span>Rule-Based Workflows</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 border-t border-gray-700">
+                <p class="text-xs text-gray-400 uppercase font-semibold px-2 mb-4">Collections</p>
+                <div class="sidebar-nav-item">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="folder" class="w-4 h-4"></i>
+                        <span>Master Agreements</span>
+                    </div>
+                </div>
+                <div class="sidebar-nav-item">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="folder" class="w-4 h-4"></i>
+                        <span>Statements of Work</span>
+                    </div>
+                </div>
+                <div class="sidebar-nav-item">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="folder" class="w-4 h-4"></i>
+                        <span>NDAs & Confidentiality</span>
+                    </div>
+                </div>
+                <div class="sidebar-nav-item">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="folder" class="w-4 h-4"></i>
+                        <span>Vendor Agreements</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Bar -->
+            <header class="top-bar px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center flex-1">
+                    <div class="relative w-80">
+                        <input 
+                            type="text" 
+                            placeholder="Global search contracts, obligations, workflows..." 
+                            class="w-full pl-10 pr-4 py-2 bg-gray-100 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
+                        <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-gray-500"></i>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-4 ml-6">
+                    <button class="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+                    <button class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                    </button>
+                    <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
+                        BB
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Main Area -->
+            <main class="flex-1 overflow-y-auto">
+                <!-- Dashboard Section -->
+                <div id="dashboard-section" class="section-visible">
+                    <div class="p-6">
+                        <!-- Page Header -->
+                        <div class="mb-8">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Intelligence Dashboard</h1>
+                            <p class="text-sm text-gray-600">Command Center for contract portfolio analytics and risk intelligence</p>
+                        </div>
+                        
+                        <!-- KPI Tiles -->
+                        <div class="grid grid-cols-5 gap-4 mb-8">
+                            <div class="kpi-tile">
+                                <p class="kpi-label">Total Contracts</p>
+                                <p class="kpi-value">428</p>
+                                <p class="kpi-change" style="color: #10B981;">↑ 12 this month</p>
+                            </div>
+                            <div class="kpi-tile">
+                                <p class="kpi-label">Total Contract Value</p>
+                                <p class="kpi-value">R 156M</p>
+                                <p class="kpi-change" style="color: #10B981;">↑ 8.3% YoY</p>
+                            </div>
+                            <div class="kpi-tile">
+                                <p class="kpi-label">Pending Review</p>
+                                <p class="kpi-value">23</p>
+                                <p class="kpi-change" style="color: #F59E0B;">⚠ 5 overdue</p>
+                            </div>
+                            <div class="kpi-tile">
+                                <p class="kpi-label">At-Risk Contracts</p>
+                                <p class="kpi-value">8</p>
+                                <p class="kpi-change risk-high;">↑ 2 high-risk</p>
+                            </div>
+                            <div class="kpi-tile">
+                                <p class="kpi-label">Revenue Opportunity</p>
+                                <p class="kpi-value">R 8.2M</p>
+                                <p class="kpi-change" style="color: #10B981;">From optimizations</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Risk Scorecard & Revenue Leakage -->
+                        <div class="grid grid-cols-2 gap-6 mb-8">
+                            <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                                <h2 class="text-lg font-bold text-gray-900 mb-6">Risk Scorecard</h2>
+                                <div class="space-y-6">
+                                    <div>
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="text-sm font-semibold text-gray-700">Financial Risk</span>
+                                            <span class="risk-high">8.2/10</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-red-500 h-2 rounded-full" style="width: 82%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="text-sm font-semibold text-gray-700">Compliance Risk</span>
+                                            <span class="risk-medium">6.5/10</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-amber-500 h-2 rounded-full" style="width: 65%"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="text-sm font-semibold text-gray-700">Operational Risk</span>
+                                            <span class="risk-low">3.1/10</span>
+                                        </div>
+                                        <div class="w-full bg-gray-200 rounded-full h-2">
+                                            <div class="bg-green-500 h-2 rounded-full" style="width: 31%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                                <h2 class="text-lg font-bold text-gray-900 mb-6">Revenue Leakage</h2>
+                                <div class="chart-container">
+                                    <canvas id="revenueChart"></canvas>
+                                </div>
+                                <p class="text-xs text-gray-600 mt-4">Potential savings from renewal optimization and rate adjustment opportunities</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Portfolio Health -->
+                        <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                            <h2 class="text-lg font-bold text-gray-900 mb-6">Contract Portfolio Status</h2>
+                            <div class="grid grid-cols-4 gap-4">
+                                <div class="p-4 bg-green-50 rounded-lg border border-green-200">
+                                    <p class="text-sm font-semibold text-gray-700 mb-2">Active & Compliant</p>
+                                    <p class="text-2xl font-bold text-green-600">312</p>
+                                    <p class="text-xs text-gray-600 mt-1">72.9% of portfolio</p>
+                                </div>
+                                <div class="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                                    <p class="text-sm font-semibold text-gray-700 mb-2">Requires Action</p>
+                                    <p class="text-2xl font-bold text-amber-600">89</p>
+                                    <p class="text-xs text-gray-600 mt-1">20.8% of portfolio</p>
+                                </div>
+                                <div class="p-4 bg-red-50 rounded-lg border border-red-200">
+                                    <p class="text-sm font-semibold text-gray-700 mb-2">At Risk</p>
+                                    <p class="text-2xl font-bold text-red-600">23</p>
+                                    <p class="text-xs text-gray-600 mt-1">5.4% of portfolio</p>
+                                </div>
+                                <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                    <p class="text-sm font-semibold text-gray-700 mb-2">Expired</p>
+                                    <p class="text-2xl font-bold text-gray-600">4</p>
+                                    <p class="text-xs text-gray-600 mt-1">0.9% of portfolio</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Obligation Monitor Section -->
+                <div id="obligations-section" class="section-hidden">
+                    <div class="p-6">
+                        <div class="mb-8">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Obligation Monitor</h1>
+                            <p class="text-sm text-gray-600">Post-execution obligations with fulfillment tracking and SLA monitoring</p>
+                        </div>
+                        
+                        <!-- Filters -->
+                        <div class="mb-6 flex gap-2 flex-wrap">
+                            <span class="text-sm font-semibold text-gray-700 flex items-center">Filter by:</span>
+                            <div class="filter-chip active">All Obligations (47)</div>
+                            <div class="filter-chip">On Track</div>
+                            <div class="filter-chip">At Risk</div>
+                            <div class="filter-chip">Overdue</div>
+                        </div>
+                        
+                        <!-- Obligation List -->
+                        <div class="space-y-2 mb-6">
+                            <div class="obligation-item">
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-900">Annual Compliance Audit</p>
+                                    <p class="text-xs text-gray-600 mt-1">Due: Q1 2026 | Assigned to: Finance Team</p>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span class="status-badge status-at-risk">At Risk</span>
+                                    <span class="sla-timer sla-yellow">8 days left</span>
+                                </div>
+                            </div>
+                            
+                            <div class="obligation-item">
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-900">Quarterly Business Review</p>
+                                    <p class="text-xs text-gray-600 mt-1">Due: Jan 31 2026 | Assigned to: Account Management</p>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span class="status-badge status-active">On Track</span>
+                                    <span class="sla-timer sla-green">18 days left</span>
+                                </div>
+                            </div>
+                            
+                            <div class="obligation-item">
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-900">Renewal Notice Submission</p>
+                                    <p class="text-xs text-gray-600 mt-1">Due: Feb 15 2026 | Assigned to: Legal</p>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span class="status-badge status-active">On Track</span>
+                                    <span class="sla-timer sla-green">33 days left</span>
+                                </div>
+                            </div>
+                            
+                            <div class="obligation-item">
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-900">Data Security Assessment</p>
+                                    <p class="text-xs text-gray-600 mt-1">Due: Jan 20 2026 | Assigned to: Security Team</p>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span class="status-badge status-overdue">OVERDUE</span>
+                                    <span class="sla-timer sla-red">Overdue by 5 days</span>
+                                </div>
+                            </div>
+                            
+                            <div class="obligation-item">
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-900">Insurance Certificate Update</p>
+                                    <p class="text-xs text-gray-600 mt-1">Due: Jan 25 2026 | Assigned to: Operations</p>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span class="status-badge status-pending">Pending</span>
+                                    <span class="sla-timer sla-yellow">2 days left</span>
+                                </div>
+                            </div>
+                            
+                            <div class="obligation-item">
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-900">Annual IP Audit Report</p>
+                                    <p class="text-xs text-gray-600 mt-1">Due: Mar 30 2026 | Assigned to: Legal</p>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <span class="status-badge status-active">On Track</span>
+                                    <span class="sla-timer sla-green">75 days left</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Global Repository Section -->
+                <div id="repository-section" class="section-hidden">
+                    <div class="p-6">
+                        <div class="mb-8">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Global Repository</h1>
+                            <p class="text-sm text-gray-600">Searchable, filterable contract repository with AI-extracted metadata</p>
+                        </div>
+                        
+                        <!-- View Toggle -->
+                        <div class="mb-6 flex gap-2">
+                            <button class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium">Flat View</button>
+                            <button class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-medium">Hierarchical View</button>
+                        </div>
+                        
+                        <!-- Repository Table -->
+                        <div class="bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">
+                            <table class="w-full text-xs">
+                                <thead class="bg-gray-50 border-b border-gray-200">
+                                    <tr>
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-900">Contract ID</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-900">Counterparty</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-900">Effective Date</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-900">TCV</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-900">Status</th>
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-900">AI-Extracted Metadata</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-row">
+                                        <td class="px-4 py-3 text-blue-600 font-medium">C-2024-1847</td>
+                                        <td class="px-4 py-3 text-gray-900 font-medium">Acme Corporation</td>
+                                        <td class="px-4 py-3 text-gray-600">Jan 15, 2024</td>
+                                        <td class="px-4 py-3 text-gray-900 font-semibold">R 12.5M</td>
+                                        <td class="px-4 py-3"><span class="status-badge status-active">Active</span></td>
+                                        <td class="px-4 py-3">
+                                            <div>
+                                                <span class="metadata-tag">Non-standard Indemnity</span>
+                                                <span class="metadata-tag">IP Assignment</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td class="px-4 py-3 text-blue-600 font-medium">C-2024-1923</td>
+                                        <td class="px-4 py-3 text-gray-900 font-medium">TechVendor Inc</td>
+                                        <td class="px-4 py-3 text-gray-600">Mar 22, 2024</td>
+                                        <td class="px-4 py-3 text-gray-900 font-semibold">R 8.3M</td>
+                                        <td class="px-4 py-3"><span class="status-badge status-pending">Pending Signature</span></td>
+                                        <td class="px-4 py-3">
+                                            <div>
+                                                <span class="metadata-tag">SaaS License</span>
+                                                <span class="metadata-tag">Data Processing</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td class="px-4 py-3 text-blue-600 font-medium">C-2024-2101</td>
+                                        <td class="px-4 py-3 text-gray-900 font-medium">Global Supply Co</td>
+                                        <td class="px-4 py-3 text-gray-600">Jun 10, 2024</td>
+                                        <td class="px-4 py-3 text-gray-900 font-semibold">R 45.7M</td>
+                                        <td class="px-4 py-3"><span class="status-badge status-at-risk">At Risk</span></td>
+                                        <td class="px-4 py-3">
+                                            <div>
+                                                <span class="metadata-tag">Payment Terms Complex</span>
+                                                <span class="metadata-tag">Force Majeure</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td class="px-4 py-3 text-blue-600 font-medium">C-2024-2245</td>
+                                        <td class="px-4 py-3 text-gray-900 font-medium">Professional Services Ltd</td>
+                                        <td class="px-4 py-3 text-gray-600">Aug 05, 2024</td>
+                                        <td class="px-4 py-3 text-gray-900 font-semibold">R 6.2M</td>
+                                        <td class="px-4 py-3"><span class="status-badge status-active">Active</span></td>
+                                        <td class="px-4 py-3">
+                                            <div>
+                                                <span class="metadata-tag">GDPR Compliant</span>
+                                                <span class="metadata-tag">SOW-Based</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr class="table-row">
+                                        <td class="px-4 py-3 text-blue-600 font-medium">C-2024-2089</td>
+                                        <td class="px-4 py-3 text-gray-900 font-medium">Enterprise Solutions Inc</td>
+                                        <td class="px-4 py-3 text-gray-600">Sep 14, 2024</td>
+                                        <td class="px-4 py-3 text-gray-900 font-semibold">R 32.1M</td>
+                                        <td class="px-4 py-3"><span class="status-badge status-active">Active</span></td>
+                                        <td class="px-4 py-3">
+                                            <div>
+                                                <span class="metadata-tag">Master Agreement</span>
+                                                <span class="metadata-tag">Auto-renewal</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Workflows Section -->
+                <div id="workflows-section" class="section-hidden">
+                    <div class="p-6">
+                        <div class="mb-8">
+                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Rule-Based Workflows</h1>
+                            <p class="text-sm text-gray-600">Complex approval chains with conditional routing logic</p>
+                        </div>
+                        
+                        <!-- Workflow Examples -->
+                        <div class="space-y-6">
+                            <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="text-lg font-bold text-gray-900">Vendor Master Agreement: TechCorp</h3>
+                                        <p class="text-sm text-gray-600 mt-1">Contract ID: C-2024-1847 | TCV: R 12.5M</p>
+                                    </div>
+                                    <span class="status-badge status-pending">In Review</span>
+                                </div>
+                                <div class="mt-6">
+                                    <p class="text-sm font-semibold text-gray-700 mb-4">Approval Chain & Routing Logic</p>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                                            <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Procurement Review</p>
+                                                <p class="text-xs text-gray-600">Standard sourcing validation</p>
+                                            </div>
+                                            <span class="ml-auto px-3 py-1 bg-green-100 text-green-700 text-xs font-semibold rounded">✓ Completed</span>
+                                        </div>
+                                        <div class="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg">
+                                            <div class="w-6 h-6 bg-yellow-500 text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Legal Review (Conditional)</p>
+                                                <div class="mt-2">
+                                                    <span class="workflow-badge">Triggered: Non-standard Indemnity detected</span>
+                                                    <span class="workflow-badge">Escalated to: General Counsel</span>
+                                                </div>
+                                            </div>
+                                            <span class="ml-auto px-3 py-1 bg-yellow-100 text-yellow-700 text-xs font-semibold rounded">⏱ In Progress</span>
+                                        </div>
+                                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg opacity-60">
+                                            <div class="w-6 h-6 bg-gray-400 text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">CFO Approval (Conditional)</p>
+                                                <p class="text-xs text-gray-600">Auto-routed to CFO due to R12.5M value</p>
+                                            </div>
+                                            <span class="ml-auto px-3 py-1 bg-gray-100 text-gray-600 text-xs font-semibold rounded">Pending</span>
+                                        </div>
+                                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg opacity-60">
+                                            <div class="w-6 h-6 bg-gray-400 text-white rounded-full flex items-center justify-center text-xs font-bold">4</div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Executive Sign-off</p>
+                                                <p class="text-xs text-gray-600">Final approval before execution</p>
+                                            </div>
+                                            <span class="ml-auto px-3 py-1 bg-gray-100 text-gray-600 text-xs font-semibold rounded">Pending</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="text-lg font-bold text-gray-900">SaaS Subscription: CloudServices Pro</h3>
+                                        <p class="text-sm text-gray-600 mt-1">Contract ID: C-2024-1923 | TCV: R 8.3M</p>
+                                    </div>
+                                    <span class="status-badge status-at-risk">At Risk</span>
+                                </div>
+                                <div class="mt-6">
+                                    <p class="text-sm font-semibold text-gray-700 mb-4">Approval Chain & Routing Logic</p>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                                            <div class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">IT Security Assessment</p>
+                                                <div class="mt-2">
+                                                    <span class="workflow-badge">Triggered: Data Processing Agreement required</span>
+                                                    <span class="workflow-badge">Triggered: GDPR Compliance Review</span>
+                                                </div>
+                                            </div>
+                                            <span class="ml-auto px-3 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded">⚠ Blocked</span>
+                                        </div>
+                                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg opacity-60">
+                                            <div class="w-6 h-6 bg-gray-400 text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Data Protection Officer Review</p>
+                                                <p class="text-xs text-gray-600">Mandatory for data processing contracts</p>
+                                            </div>
+                                            <span class="ml-auto px-3 py-1 bg-gray-100 text-gray-600 text-xs font-semibold rounded">Blocked</span>
+                                        </div>
+                                        <div class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg opacity-60">
+                                            <div class="w-6 h-6 bg-gray-400 text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
+                                            <div>
+                                                <p class="text-sm font-medium text-gray-900">Procurement Sign-off</p>
+                                                <p class="text-xs text-gray-600">Final procurement approval</p>
+                                            </div>
+                                            <span class="ml-auto px-3 py-1 bg-gray-100 text-gray-600 text-xs font-semibold rounded">Blocked</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+        
+        // Navigation Handler
+        const sidebarItems = document.querySelectorAll('.sidebar-nav-item');
+        const sections = {
+            'dashboard': 'dashboard-section',
+            'obligations': 'obligations-section',
+            'repository': 'repository-section',
+            'workflows': 'workflows-section'
+        };
+        
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const sectionKey = item.getAttribute('data-section');
+                
+                // Update active state
+                sidebarItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Show/hide sections
+                Object.values(sections).forEach(id => {
+                    document.getElementById(id).classList.add('section-hidden');
+                    document.getElementById(id).classList.remove('section-visible');
+                });
+                
+                document.getElementById(sections[sectionKey]).classList.remove('section-hidden');
+                document.getElementById(sections[sectionKey]).classList.add('section-visible');
+            });
+        });
+        
+        // Charts
+        const revenueCtx = document.getElementById('revenueChart');
+        if (revenueCtx) {
+            new Chart(revenueCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Rate Adjustments', 'Early Payment Discounts', 'Renewal Optimization', 'Unused Quantities'],
+                    datasets: [{
+                        data: [2800000, 1900000, 2400000, 1000000],
+                        backgroundColor: [
+                            '#0078D4',
+                            '#50E3C2',
+                            '#F7A600',
+                            '#B3E5FC'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { size: 12 },
+                                padding: 15
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
