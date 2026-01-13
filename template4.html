@@ -685,7 +685,8 @@
             <div id="contracts-view" class="view flex-1 overflow-auto">
                 <div class="p-6">
                     <div class="mb-6">
-                        <button class="button-primary" style="background:#10b981;padding:8px 14px;">New
+                        <button class="button-primary" style="background:#10b981;padding:8px 14px;"
+                            onclick="switchView('create-contract')">New
                             Contract</button>
                     </div>
 
@@ -964,19 +965,398 @@
                 </div>
             </div>
 
-            <!-- New Contract View -->
-            <div id="new-contract-view" class="view flex-1 overflow-auto">
-                <div class="p-6">
-                    <button class="button-secondary mb-6" onclick="switchView('workflow')">Back</button>
-                    <div class="form-section">
-                        <div class="form-label">Suppliers</div>
-                        <div class="stat-card">Shattered Glass Group PTY (Ltd)</div>
-                        <div class="stat-card">Fun Time</div>
+            <!-- Create Contract View -->
+            <div id="create-contract-view" class="view flex-1 overflow-auto bg-[#F3F4F6]">
+                <div class="p-4">
+                    <div class="flex gap-2 mb-6">
+                        <button
+                            class="bg-[#EF4444] text-white px-6 py-2 rounded-md text-sm font-semibold hover:bg-red-600 transition-colors"
+                            onclick="switchView('contracts')">Back</button>
+                        <button
+                            class="bg-[#22C55E] text-white px-6 py-2 rounded-md text-sm font-semibold hover:bg-green-600 transition-colors">Save
+                            Contract</button>
                     </div>
-                    <div class="form-section">
-                        <div class="form-label">Clients</div>
-                        <div class="stat-card">Bateman Projects Ltd</div>
-                        <div class="stat-card">Covers Foods</div>
+
+                    <div class="flex flex-col gap-4">
+                        <!-- General Section -->
+                        <div
+                            class="accordion-row open bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                            <div
+                                class="accordion-header flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-[#7C3AED] w-10 h-10 rounded-full flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                                            </path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="font-bold text-xl text-gray-800">General:</span>
+                                </div>
+                                <span class="accordion-toggle text-2xl text-gray-400">▾</span>
+                            </div>
+                            <div class="accordion-content p-6 bg-[#F3F4F6] border-t border-gray-100">
+                                <div class="grid grid-cols-1 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Contract
+                                            Title:</label>
+                                        <input type="text" placeholder="Enter a Contract Title..."
+                                            class="w-full p-4 bg-white border border-gray-200 rounded-md outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-gray-700 shadow-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Status:</label>
+                                        <select
+                                            class="w-full p-4 bg-white border border-gray-200 rounded-md outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-gray-500 shadow-sm appearance-none">
+                                            <option>Select a Status</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Business
+                                            Unit:</label>
+                                        <select
+                                            class="w-full p-4 bg-white border border-gray-200 rounded-md outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-gray-500 shadow-sm appearance-none">
+                                            <option>Select a Business Unit</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Category:</label>
+                                        <select
+                                            class="w-full p-4 bg-white border border-gray-200 rounded-md outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-gray-500 shadow-sm appearance-none">
+                                            <option>Select a Category</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Type:</label>
+                                        <select
+                                            class="w-full p-4 bg-white border border-gray-200 rounded-md outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-gray-500 shadow-sm appearance-none">
+                                            <option>Select a Type</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Supplier:</label>
+                                        <select
+                                            class="w-full p-4 bg-white border border-gray-200 rounded-md outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-gray-500 shadow-sm appearance-none">
+                                            <option>Select...</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Link to
+                                            Contract:</label>
+                                        <select
+                                            class="w-full p-4 bg-white border border-gray-200 rounded-md outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-gray-500 shadow-sm appearance-none">
+                                            <option>Select a Contract to link to...</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Comments:</label>
+                                        <textarea placeholder="Enter a Comments..."
+                                            class="w-full p-4 bg-white border border-gray-200 rounded-md outline-none h-32 resize-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-gray-700 shadow-sm"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lifecycle Section -->
+                        <div class="accordion-row bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                            <div
+                                class="accordion-header flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-[#3B82F6] w-10 h-10 rounded-full flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <span class="font-bold text-xl text-gray-800">Lifecycle:</span>
+                                </div>
+                                <span class="accordion-toggle text-2xl text-gray-400">▾</span>
+                            </div>
+                            <div class="accordion-content p-6 bg-[#F3F4F6] border-t border-gray-100">
+                                <div class="grid grid-cols-1 gap-6">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Start
+                                            Date:</label>
+                                        <div class="flex gap-2">
+                                            <input type="text" value="13"
+                                                class="w-20 p-2 bg-white border border-gray-200 rounded-md text-center text-sm font-medium shadow-sm">
+                                            <select
+                                                class="flex-1 p-2 bg-white border border-gray-200 rounded-md text-sm font-medium shadow-sm">
+                                                <option>January</option>
+                                            </select>
+                                            <input type="text" value="2026"
+                                                class="w-24 p-2 bg-white border border-gray-200 rounded-md text-center text-sm font-medium shadow-sm">
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <label class="text-sm font-semibold text-gray-700">Please remind the contract
+                                            owner(s):</label>
+                                        <input type="checkbox"
+                                            class="w-5 h-5 border-gray-300 rounded text-blue-600 focus:ring-blue-500">
+                                    </div>
+                                    <button
+                                        class="bg-[#D1D5DB] text-gray-700 px-4 py-2 rounded-md font-bold text-sm shadow-sm self-start">Configure
+                                        Start Date Reminder</button>
+
+                                    <div class="flex gap-8">
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="radio" name="term" class="w-4 h-4 text-blue-600" checked>
+                                            <span class="text-sm font-semibold text-gray-700">Fixed Term</span>
+                                        </label>
+                                        <label class="flex items-center gap-2 cursor-pointer">
+                                            <input type="radio" name="term" class="w-4 h-4 text-blue-600">
+                                            <span class="text-sm font-semibold text-gray-700">Open Ended</span>
+                                        </label>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Cycle
+                                            (months):</label>
+                                        <input type="text" placeholder="Enter a Cycle..."
+                                            class="w-full p-4 bg-white border border-gray-200 rounded-md shadow-sm">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">End Date:</label>
+                                        <div class="flex gap-2">
+                                            <input type="text" value="13"
+                                                class="w-20 p-2 bg-white border border-gray-200 rounded-md text-center text-sm font-medium shadow-sm">
+                                            <select
+                                                class="flex-1 p-2 bg-white border border-gray-200 rounded-md text-sm font-medium shadow-sm">
+                                                <option>January</option>
+                                            </select>
+                                            <input type="text" value="2026"
+                                                class="w-24 p-2 bg-white border border-gray-200 rounded-md text-center text-sm font-medium shadow-sm">
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <label class="text-sm font-semibold text-gray-700">Please remind the contract
+                                            owner(s):</label>
+                                        <input type="checkbox"
+                                            class="w-5 h-5 border-gray-300 rounded text-blue-600 focus:ring-blue-500">
+                                    </div>
+                                    <button
+                                        class="bg-[#D1D5DB] text-gray-700 px-4 py-2 rounded-md font-bold text-sm shadow-sm self-start">Configure
+                                        End Date Reminder</button>
+
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Notice
+                                            (months):</label>
+                                        <input type="text" placeholder="Enter a Notice Period..."
+                                            class="w-full p-4 bg-white border border-gray-200 rounded-md shadow-sm">
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <label class="text-sm font-semibold text-gray-700">Please remind the contract
+                                            owner(s):</label>
+                                        <input type="checkbox"
+                                            class="w-5 h-5 border-gray-300 rounded text-blue-600 focus:ring-blue-500">
+                                    </div>
+                                    <button
+                                        class="bg-[#D1D5DB] text-gray-700 px-4 py-2 rounded-md font-bold text-sm shadow-sm self-start">Configure
+                                        Notice Reminder</button>
+
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">End of Contract
+                                            Action:</label>
+                                        <select
+                                            class="w-full p-4 bg-white border border-gray-200 rounded-md appearance-none shadow-sm">
+                                            <option>Select a End of Contract</option>
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Prolongation
+                                            Period (months):</label>
+                                        <input type="text" placeholder="Enter a Prolongation Period..."
+                                            class="w-full p-4 bg-white border border-gray-200 rounded-md shadow-sm">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Billing Section -->
+                        <div class="accordion-row bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                            <div
+                                class="accordion-header flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-[#F59E0B] w-10 h-10 rounded-full flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <span class="font-bold text-xl text-gray-800">Billing:</span>
+                                </div>
+                                <span class="accordion-toggle text-2xl text-gray-400">▾</span>
+                            </div>
+                            <div class="accordion-content p-6 bg-[#F3F4F6] border-t border-gray-100">
+                                <button
+                                    class="bg-[#22C55E] text-white px-4 py-2 rounded-md font-bold text-sm shadow-sm mb-6">Add
+                                    Billing</button>
+
+                                <div class="bg-[#F9FAFB] border border-gray-200 rounded-md p-6">
+                                    <div class="grid grid-cols-1 gap-6">
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Billing
+                                                Type:</label>
+                                            <select
+                                                class="w-full p-2 bg-white border border-gray-200 rounded-md appearance-none">
+                                                <option>Cost</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Billing
+                                                Cycle:</label>
+                                            <select
+                                                class="w-full p-2 bg-white border border-gray-200 rounded-md appearance-none">
+                                                <option>Once-off</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Billing
+                                                Amount:</label>
+                                            <div class="flex">
+                                                <input type="text" value="0"
+                                                    class="flex-1 p-2 bg-white border border-gray-200 rounded-l-md">
+                                                <span
+                                                    class="bg-[#22C55E] text-white px-4 py-2 rounded-r-md text-xs font-bold flex items-center">ZAR</span>
+                                            </div>
+                                        </div>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <label class="block text-sm font-semibold text-gray-700 mb-2">First
+                                                    Billing Date:</label>
+                                                <div class="flex gap-1">
+                                                    <input type="text" value="13"
+                                                        class="w-10 p-1 bg-white border border-gray-200 rounded text-center text-xs">
+                                                    <select
+                                                        class="flex-1 p-1 bg-white border border-gray-200 rounded text-xs">
+                                                        <option>January</option>
+                                                    </select>
+                                                    <input type="text" value="2026"
+                                                        class="w-14 p-1 bg-white border border-gray-200 rounded text-center text-xs">
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-semibold text-gray-700 mb-2">Last
+                                                    Billing Date:</label>
+                                                <div class="flex gap-1">
+                                                    <input type="text" value="13"
+                                                        class="w-10 p-1 bg-white border border-gray-200 rounded text-center text-xs">
+                                                    <select
+                                                        class="flex-1 p-1 bg-white border border-gray-200 rounded text-xs">
+                                                        <option>January</option>
+                                                    </select>
+                                                    <input type="text" value="2026"
+                                                        class="w-14 p-1 bg-white border border-gray-200 rounded text-center text-xs">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label
+                                                class="block text-sm font-semibold text-gray-700 mb-2">Description:</label>
+                                            <textarea
+                                                class="w-full p-2 bg-white border border-gray-200 rounded-md h-24 resize-none"></textarea>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-semibold text-gray-700 mb-2">Billing
+                                                Increase will take effect from:</label>
+                                            <div class="flex gap-1 w-1/2">
+                                                <input type="text" value="13"
+                                                    class="w-10 p-1 bg-white border border-gray-200 rounded text-center text-xs">
+                                                <select
+                                                    class="flex-1 p-1 bg-white border border-gray-200 rounded text-xs">
+                                                    <option>January</option>
+                                                </select>
+                                                <input type="text" value="2026"
+                                                    class="w-14 p-1 bg-white border border-gray-200 rounded text-center text-xs">
+                                            </div>
+                                        </div>
+                                        <div class="flex justify-end gap-2 mt-4">
+                                            <button
+                                                class="px-4 py-2 border border-[#EF4444] text-[#EF4444] rounded-md text-sm font-bold hover:bg-red-50">Cancel</button>
+                                            <button
+                                                class="px-4 py-2 bg-[#22C55E] text-white rounded-md text-sm font-bold hover:bg-green-600">Save</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Contacts Section -->
+                        <div class="accordion-row bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                            <div
+                                class="accordion-header flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-[#A855F7] w-10 h-10 rounded-full flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M3 18v-6a9 9 0 0118 0v6M18 19s-1-4-6-4-6 4-6 4"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M21 19a2 2 0 01-2 2h-1a2 2 0 01-2-2v-3a2 2 0 012-2h3zM3 19a2 2 0 002 2h1a2 2 0 002-2v-3a2 2 0 00-2-2H3z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <span class="font-bold text-xl text-gray-800">Contacts:</span>
+                                </div>
+                                <span class="accordion-toggle text-2xl text-gray-400">▾</span>
+                            </div>
+                            <div
+                                class="accordion-content p-6 bg-[#F3F4F6] border-t border-gray-100 text-gray-500 italic">
+                                Contacts section content...</div>
+                        </div>
+
+                        <!-- Attachments Section -->
+                        <div class="accordion-row bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                            <div
+                                class="accordion-header flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-[#3B82F6] w-10 h-10 rounded-full flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <span class="font-bold text-xl text-gray-800">Attachment:</span>
+                                </div>
+                                <span class="accordion-toggle text-2xl text-gray-400">▾</span>
+                            </div>
+                            <div
+                                class="accordion-content p-6 bg-[#F3F4F6] border-t border-gray-100 text-gray-500 italic">
+                                Attachments section content...</div>
+                        </div>
+
+                        <!-- Workflow Section -->
+                        <div class="accordion-row bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                            <div
+                                class="accordion-header flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-[#F97316] w-10 h-10 rounded-full flex items-center justify-center">
+                                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                            viewBox="0 0 24 24">
+                                            <circle cx="12" cy="7" r="3" stroke-width="2"></circle>
+                                            <circle cx="6" cy="17" r="3" stroke-width="2"></circle>
+                                            <circle cx="18" cy="17" r="3" stroke-width="2"></circle>
+                                            <path d="M12 10v4M12 14H6m6 0h6" stroke-width="2"></path>
+                                        </svg>
+                                    </div>
+                                    <span class="font-bold text-xl text-gray-800">Workflow:</span>
+                                </div>
+                                <span class="accordion-toggle text-2xl text-gray-400">▾</span>
+                            </div>
+                            <div
+                                class="accordion-content p-6 bg-[#F3F4F6] border-t border-gray-100 text-gray-500 italic">
+                                Workflow section content...</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1212,9 +1592,13 @@
                 document.getElementById('create-event-view').classList.add('active');
                 items[3].classList.add('active');
                 document.querySelector('.header-title').textContent = 'Events';
+            } else if (viewName === 'create-contract') {
+                document.getElementById('create-contract-view').classList.add('active');
+                items[2].classList.add('active');
+                document.querySelector('.header-title').textContent = 'Contracts';
             }
         }
-        function showNewWorkflow() { switchView('contracts'); document.getElementById('new-contract-view').classList.add('active'); }
+        function showNewWorkflow() { switchView('create-contract'); }
         // Initialize default view
         switchView('dashboards');
 
