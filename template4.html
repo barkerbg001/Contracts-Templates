@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,72 +10,467 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-        body { background-color: #F5F5F5; color: #333; }
-        .sidebar { background-color: #2D2D2D; color: #FFFFFF; }
-        .sidebar-item { display:flex; align-items:center; gap:12px; padding:16px 20px; cursor:pointer; transition:all .2s; color:#B0B0B0; font-size:14px; }
-        .sidebar-item:hover { background-color:#3D3D3D; color:#FFFFFF; }
-        .sidebar-item.active { background-color:#0052CC; color:#FFFFFF; border-left:4px solid #0052CC; }
-        .sidebar-icon { width:24px; height:24px; }
-        .header-section { background-color:#FFFFFF; padding:20px; border-bottom:1px solid #E0E0E0; }
-        .header-title { font-size:24px; font-weight:700; color:#1A1A1A; }
-        .section-header { background:linear-gradient(90deg,#0052FF 0%,#0067FF 100%); color:white; padding:12px 20px; border-radius:4px 4px 0 0; font-weight:600; font-size:14px; display:flex; justify-content:space-between; align-items:center; }
-        .section-content { background-color:#FFFFFF; padding:20px; border:1px solid #E0E0E0; border-top:none; }
-        .stat-card { background:#FFFFFF; border:1px solid #E0E0E0; border-radius:4px; padding:20px; text-align:center; display:flex; flex-direction:column; gap:10px; }
-        .stat-value { font-size:28px; font-weight:700; color:#0052FF; }
-        .stat-label { font-size:12px; color:#666; font-weight:500; text-transform:uppercase; letter-spacing:.5px; }
-        .button-primary { background:#22C55E; color:white; padding:8px 16px; border-radius:4px; border:none; font-weight:600; font-size:12px; cursor:pointer; transition:background-color .2s; }
-        .button-primary:hover { background:#16A34A; }
-        .button-secondary { background:#EF4444; color:white; padding:8px 16px; border-radius:4px; border:none; font-weight:600; font-size:12px; cursor:pointer; transition:background-color .2s; }
-        .button-secondary:hover { background:#DC2626; }
-        .workflow-item { background:#FFFFFF; border:1px solid #E0E0E0; border-radius:4px; padding:16px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; }
-        .workflow-info { flex:1; }
-        .workflow-title { font-weight:600; color:#1A1A1A; margin-bottom:4px; }
-        .workflow-subtitle { font-size:12px; color:#666; }
-        .form-section { background:#FFFFFF; border:1px solid #E0E0E0; border-radius:4px; padding:20px; margin-bottom:20px; }
-        .form-group { margin-bottom:16px; }
-        .form-label { display:block; font-weight:600; font-size:12px; color:#1A1A1A; margin-bottom:8px; text-transform:uppercase; letter-spacing:.3px; }
-        .form-input, .form-select { width:100%; padding:10px 12px; border:1px solid #E0E0E0; border-radius:4px; font-size:13px; background:#FFFFFF; }
-        .form-input:focus, .form-select:focus { outline:none; border-color:#0052FF; box-shadow:0 0 0 3px rgba(0,82,255,.1); }
-        .view { display:none; }
-        .view.active { display:block; }
 
-        .legend-item { display:flex; align-items:center; gap:8px; font-size:12px; margin:8px 0; }
-        .legend-color { width:16px; height:16px; border-radius:2px; }
-        #chartLegend { flex:1; display:flex; flex-direction:column; justify-content:space-around; padding-left:16px; }
-        .chart-legend-item { display:flex; align-items:center; gap:10px; padding:6px 0; justify-content:space-between; }
-        .chart-legend-color { width:14px; height:14px; border-radius:3px; flex-shrink:0; }
-        .chart-legend-label { margin-left:8px; color:#111827; font-size:13px; flex:1; }
-        .chart-legend-value { margin-left:12px; color:#374151; font-size:13px; font-weight:600; }
+        * {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
 
-        .calendar-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-        .calendar-month { font-size:18px; font-weight:700; color:#0052FF; }
+        body {
+            background-color: #F5F5F5;
+            color: #333;
+        }
 
-        .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin-bottom:20px; grid-auto-rows:44px; max-height:360px; overflow:auto; }
-        .calendar-weekday { text-align:center; font-weight:600; color:#0052FF; font-size:11px; text-transform:uppercase; padding:8px 0; }
-        .calendar-day { height:40px; display:flex; align-items:center; justify-content:center; border:1px solid #E0E0E0; border-radius:4px; cursor:pointer; font-size:12px; background-color:#FFFFFF; transition:all .2s; position:relative; }
-        .calendar-day:hover { background-color:#F5F5F5; }
-        .calendar-day.today { background-color:#0052FF; color:white; font-weight:700; }
-        .calendar-day.other-month { color:#CCC; }
-        .calendar-day.selected-day { outline:2px solid #0052FF; box-shadow:0 0 0 4px rgba(0,82,255,0.06); background-color:#E9F5FF; }
+        .sidebar {
+            background-color: #2D2D2D;
+            color: #FFFFFF;
+        }
 
-        .event-item { padding:12px; border-left:3px solid #0052FF; background-color:#F8F8F8; border-radius:2px; margin-bottom:12px; }
-        .event-date { font-size:12px; color:#0052FF; font-weight:700; }
-        .event-title { font-size:13px; color:#1A1A1A; margin-top:4px; }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all .2s;
+            color: #B0B0B0;
+            font-size: 14px;
+        }
 
-        .expiry-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-top:20px; }
-        .expiry-box { border:2px solid #E0E0E0; border-radius:4px; padding:16px; text-align:center; }
-        .expiry-number { font-size:28px; font-weight:700; color:#0052FF; }
-        .expiry-label { font-size:11px; color:#666; margin-top:8px; text-transform:uppercase; letter-spacing:0.3px; }
+        .sidebar-item:hover {
+            background-color: #3D3D3D;
+            color: #FFFFFF;
+        }
+
+        .sidebar-item.active {
+            background-color: #0052CC;
+            color: #FFFFFF;
+            border-left: 4px solid #0052CC;
+        }
+
+        .sidebar-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        .header-section {
+            background-color: #FFFFFF;
+            padding: 20px;
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1A1A1A;
+        }
+
+        .section-header {
+            background: linear-gradient(90deg, #0052FF 0%, #0067FF 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px 4px 0 0;
+            font-weight: 600;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-content {
+            background-color: #FFFFFF;
+            padding: 20px;
+            border: 1px solid #E0E0E0;
+            border-top: none;
+        }
+
+        .stat-card {
+            background: #FFFFFF;
+            border: 1px solid #E0E0E0;
+            border-radius: 4px;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0052FF;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+        }
+
+        .button-primary {
+            background: #22C55E;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color .2s;
+        }
+
+        .button-primary:hover {
+            background: #16A34A;
+        }
+
+        .button-secondary {
+            background: #EF4444;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            font-weight: 600;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color .2s;
+        }
+
+        .button-secondary:hover {
+            background: #DC2626;
+        }
+
+        .workflow-item {
+            background: #FFFFFF;
+            border: 1px solid #E0E0E0;
+            border-radius: 4px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .workflow-info {
+            flex: 1;
+        }
+
+        .workflow-title {
+            font-weight: 600;
+            color: #1A1A1A;
+            margin-bottom: 4px;
+        }
+
+        .workflow-subtitle {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .form-section {
+            background: #FFFFFF;
+            border: 1px solid #E0E0E0;
+            border-radius: 4px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 12px;
+            color: #1A1A1A;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: .3px;
+        }
+
+        .form-input,
+        .form-select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #E0E0E0;
+            border-radius: 4px;
+            font-size: 13px;
+            background: #FFFFFF;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: #0052FF;
+            box-shadow: 0 0 0 3px rgba(0, 82, 255, .1);
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        .sidebar {
+            background-color: #1F2125;
+            color: #FFFFFF;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all .2s;
+            color: #9CA3AF;
+            font-size: 15px;
+            font-weight: 500;
+        }
+
+        .sidebar-item:hover {
+            background-color: #2D2F31;
+            color: #FFFFFF;
+        }
+
+        .sidebar-item.active {
+            background-color: #2D2F31;
+            color: #FFFFFF;
+        }
+
+        .sidebar-icon-wrapper {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .header-section {
+            background-color: #FFFFFF;
+            padding: 20px;
+            border-bottom: 1px solid #E0E0E0;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1A1A1A;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            margin: 8px 0;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 2px;
+        }
+
+        #chartLegend {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding-left: 16px;
+        }
+
+        .chart-legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 0;
+            justify-content: space-between;
+        }
+
+        .chart-legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .chart-legend-label {
+            margin-left: 8px;
+            color: #111827;
+            font-size: 13px;
+            flex: 1;
+        }
+
+        .chart-legend-value {
+            margin-left: 12px;
+            color: #374151;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-month {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0052FF;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+            grid-auto-rows: 44px;
+            max-height: 360px;
+            overflow: auto;
+        }
+
+        .calendar-weekday {
+            text-align: center;
+            font-weight: 600;
+            color: #0052FF;
+            font-size: 11px;
+            text-transform: uppercase;
+            padding: 8px 0;
+        }
+
+        .calendar-day {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #E0E0E0;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            background-color: #FFFFFF;
+            transition: all .2s;
+            position: relative;
+        }
+
+        .calendar-day:hover {
+            background-color: #F5F5F5;
+        }
+
+        .calendar-day.today {
+            background-color: #0052FF;
+            color: white;
+            font-weight: 700;
+        }
+
+        .calendar-day.other-month {
+            color: #CCC;
+        }
+
+        .calendar-day.selected-day {
+            outline: 2px solid #0052FF;
+            box-shadow: 0 0 0 4px rgba(0, 82, 255, 0.06);
+            background-color: #E9F5FF;
+        }
+
+        .event-item {
+            padding: 12px;
+            border-left: 3px solid #0052FF;
+            background-color: #F8F8F8;
+            border-radius: 2px;
+            margin-bottom: 12px;
+        }
+
+        .event-date {
+            font-size: 12px;
+            color: #0052FF;
+            font-weight: 700;
+        }
+
+        .event-title {
+            font-size: 13px;
+            color: #1A1A1A;
+            margin-top: 4px;
+        }
+
+        .expiry-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .expiry-box {
+            border: 2px solid #E0E0E0;
+            border-radius: 4px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .expiry-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0052FF;
+        }
+
+        .expiry-label {
+            font-size: 11px;
+            color: #666;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
         /* Accordion for workflow sections */
-        .accordion-header { background:#FFFFFF; padding:12px 14px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; box-shadow:0 1px 0 rgba(0,0,0,0.04); cursor:pointer; }
-        .accordion-title { font-weight:600; color:#111827; }
-        .accordion-toggle { background:transparent; border:none; font-size:18px; transform:rotate(0deg); transition:transform .18s; }
-        .accordion-row.open .accordion-toggle { transform:rotate(180deg); }
-        .accordion-content { display:none; padding:12px; margin-bottom:12px; border-radius:6px; background:#F8F8F8; }
-        .accordion-row.open .accordion-content { display:block; }
+        .accordion-header {
+            background: #FFFFFF;
+            padding: 12px 14px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+            cursor: pointer;
+        }
+
+        .accordion-title {
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .accordion-toggle {
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            transform: rotate(0deg);
+            transition: transform .18s;
+        }
+
+        .accordion-row.open .accordion-toggle {
+            transform: rotate(180deg);
+        }
+
+        .accordion-content {
+            display: none;
+            padding: 12px;
+            margin-bottom: 12px;
+            border-radius: 6px;
+            background: #F8F8F8;
+        }
+
+        .accordion-row.open .accordion-content {
+            display: block;
+        }
     </style>
 </head>
+
 <body class="bg-gray-100">
     <div class="flex h-screen">
         <!-- Sidebar -->
@@ -88,7 +484,8 @@
             <nav class="flex-1 overflow-y-auto">
                 <!-- Dashboards -->
                 <div class="sidebar-item active" onclick="switchView('dashboards')">
-                    <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
                         <rect x="3" y="3" width="7" height="7"></rect>
                         <rect x="14" y="3" width="7" height="7"></rect>
                         <rect x="14" y="14" width="7" height="7"></rect>
@@ -98,7 +495,8 @@
                 </div>
                 <!-- Workflow -->
                 <div class="sidebar-item" onclick="switchView('workflow')">
-                    <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="5" r="2"></circle>
                         <line x1="12" y1="7" x2="12" y2="15"></line>
                         <circle cx="8" cy="18" r="2"></circle>
@@ -110,7 +508,8 @@
                 </div>
                 <!-- Contracts -->
                 <div class="sidebar-item" onclick="switchView('contracts')">
-                    <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                         <polyline points="14 2 14 8 20 8"></polyline>
                         <line x1="12" y1="13" x2="16" y2="13"></line>
@@ -122,7 +521,8 @@
                 </div>
                 <!-- Events -->
                 <div class="sidebar-item" onclick="switchView('events')">
-                    <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2">
                         <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                         <line x1="16" y1="2" x2="16" y2="6"></line>
                         <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -132,7 +532,7 @@
                 </div>
             </nav>
         </div>
-        
+
         <!-- Main Content -->
         <div class="flex-1 overflow-auto flex flex-col">
             <div class="header-section">
@@ -143,7 +543,8 @@
             <div id="dashboards-view" class="view active flex-1 overflow-auto">
                 <div class="p-6">
                     <div class="mb-6">
-                        <div style="background:linear-gradient(90deg,#0052FF 0%,#0067FF 100%); color:#fff; padding:12px 16px; border-radius:8px 8px 0 0; font-weight:600; font-size:18px; display:flex; justify-content:space-between; align-items:center;">
+                        <div
+                            style="background:linear-gradient(90deg,#0052FF 0%,#0067FF 100%); color:#fff; padding:12px 16px; border-radius:8px 8px 0 0; font-weight:600; font-size:18px; display:flex; justify-content:space-between; align-items:center;">
                             <div>Contracts</div>
                             <div style="transform:rotate(0deg);">▲</div>
                         </div>
@@ -178,7 +579,8 @@
                     <div class="section-header">Contracts per Category<span>▲</span></div>
                     <div class="section-content mb-6">
                         <div class="flex items-center gap-8">
-                            <div style="flex:1; min-width:320px; height:320px; display:flex; align-items:center; justify-content:center;">
+                            <div
+                                style="flex:1; min-width:320px; height:320px; display:flex; align-items:center; justify-content:center;">
                                 <canvas id="categoryChart" style="width:100%; height:100%;"></canvas>
                             </div>
                             <div id="chartLegend" aria-hidden="true"></div>
@@ -188,11 +590,26 @@
                     <div class="section-header">Contract Expiry<span>▲</span></div>
                     <div class="section-content mb-6">
                         <div class="expiry-grid">
-                            <div class="expiry-box"><div class="expiry-number">5</div><div class="expiry-label">Expired</div></div>
-                            <div class="expiry-box"><div class="expiry-number">0</div><div class="expiry-label">Within 1 month</div></div>
-                            <div class="expiry-box"><div class="expiry-number">0</div><div class="expiry-label">Within 1 to 3 months</div></div>
-                            <div class="expiry-box"><div class="expiry-number">0</div><div class="expiry-label">Within 3 to 6 months</div></div>
-                            <div class="expiry-box"><div class="expiry-number">0</div><div class="expiry-label">Within 6 to 12 months</div></div>
+                            <div class="expiry-box">
+                                <div class="expiry-number">5</div>
+                                <div class="expiry-label">Expired</div>
+                            </div>
+                            <div class="expiry-box">
+                                <div class="expiry-number">0</div>
+                                <div class="expiry-label">Within 1 month</div>
+                            </div>
+                            <div class="expiry-box">
+                                <div class="expiry-number">0</div>
+                                <div class="expiry-label">Within 1 to 3 months</div>
+                            </div>
+                            <div class="expiry-box">
+                                <div class="expiry-number">0</div>
+                                <div class="expiry-label">Within 3 to 6 months</div>
+                            </div>
+                            <div class="expiry-box">
+                                <div class="expiry-number">0</div>
+                                <div class="expiry-label">Within 6 to 12 months</div>
+                            </div>
                         </div>
                     </div>
 
@@ -202,7 +619,8 @@
                             <button class="text-gray-400" id="prevMonth">←</button>
                             <div>
                                 <div class="calendar-month" id="calendarMonth">January</div>
-                                <div style="text-align:center; color:#0052FF; font-weight:700;" id="calendarYear">2026</div>
+                                <div style="text-align:center; color:#0052FF; font-weight:700;" id="calendarYear">2026
+                                </div>
                             </div>
                             <button class="text-gray-400" id="nextMonth">→</button>
                         </div>
@@ -267,7 +685,8 @@
             <div id="contracts-view" class="view flex-1 overflow-auto">
                 <div class="p-6">
                     <div class="mb-6">
-                        <button class="button-primary" style="background:#10b981;padding:8px 14px;">New Contract</button>
+                        <button class="button-primary" style="background:#10b981;padding:8px 14px;">New
+                            Contract</button>
                     </div>
 
                     <div class="contracts-accordion">
@@ -284,18 +703,27 @@
                                         <button class="accordion-toggle">▾</button>
                                     </div>
                                     <div class="accordion-content">
-                                        <div style="background:#fff;padding:12px;border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:flex-start;gap:16px;position:relative;">
+                                        <div
+                                            style="background:#fff;padding:12px;border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:flex-start;gap:16px;position:relative;">
                                             <div style="flex:1; min-width:260px;">
-                                                <div style="font-size:14px;font-weight:700;color:#111827;">Master Services Agreement (MSA)</div>
-                                                <div style="font-size:13px;color:#374151;margin-top:6px;">Contract ID: MSA-2025-001</div>
-                                                <div style="font-size:12px;color:#6B7280;margin-top:8px;">Owner: Legal - Sarah Patel</div>
+                                                <div style="font-size:14px;font-weight:700;color:#111827;">Master
+                                                    Services Agreement (MSA)</div>
+                                                <div style="font-size:13px;color:#374151;margin-top:6px;">Contract ID:
+                                                    MSA-2025-001</div>
+                                                <div style="font-size:12px;color:#6B7280;margin-top:8px;">Owner: Legal -
+                                                    Sarah Patel</div>
                                             </div>
-                                            <div style="min-width:260px; text-align:right; display:flex; flex-direction:column; justify-content:space-between; align-items:flex-end;">
+                                            <div
+                                                style="min-width:260px; text-align:right; display:flex; flex-direction:column; justify-content:space-between; align-items:flex-end;">
                                                 <div>
-                                                    <div style="font-size:13px;color:#111827;"><strong>Status:</strong> Active</div>
-                                                    <div style="font-size:12px;color:#6B7280;margin-top:6px;">Business Partner: Shattered Glass Group PTY (Ltd)</div>
-                                                    <div style="font-size:12px;color:#6B7280;margin-top:6px;">Value: AUD 120,000</div>
-                                                    <div style="font-size:12px;color:#6B7280;margin-top:6px;">Period: 01-Jan-2025 → 31-Dec-2025</div>
+                                                    <div style="font-size:13px;color:#111827;"><strong>Status:</strong>
+                                                        Active</div>
+                                                    <div style="font-size:12px;color:#6B7280;margin-top:6px;">Business
+                                                        Partner: Shattered Glass Group PTY (Ltd)</div>
+                                                    <div style="font-size:12px;color:#6B7280;margin-top:6px;">Value: AUD
+                                                        120,000</div>
+                                                    <div style="font-size:12px;color:#6B7280;margin-top:6px;">Period:
+                                                        01-Jan-2025 → 31-Dec-2025</div>
                                                 </div>
                                                 <div style="margin-top:8px;">
                                                     <button class="button-primary">View</button>
@@ -313,17 +741,25 @@
                                         <button class="accordion-toggle">▾</button>
                                     </div>
                                     <div class="accordion-content">
-                                        <div style="background:#fff;padding:12px;border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:flex-start;gap:16px;position:relative;">
+                                        <div
+                                            style="background:#fff;padding:12px;border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:flex-start;gap:16px;position:relative;">
                                             <div style="flex:1; min-width:260px;">
-                                                <div style="font-size:14px;font-weight:700;color:#111827;">2025 Contracts Overview</div>
-                                                <div style="font-size:13px;color:#374151;margin-top:6px;">Summary: 12 contracts, mixed statuses (Active, Pending, Expired).</div>
-                                                <div style="font-size:12px;color:#6B7280;margin-top:8px;">Total FY value approx. AUD 420k.</div>
+                                                <div style="font-size:14px;font-weight:700;color:#111827;">2025
+                                                    Contracts Overview</div>
+                                                <div style="font-size:13px;color:#374151;margin-top:6px;">Summary: 12
+                                                    contracts, mixed statuses (Active, Pending, Expired).</div>
+                                                <div style="font-size:12px;color:#6B7280;margin-top:8px;">Total FY value
+                                                    approx. AUD 420k.</div>
                                             </div>
-                                            <div style="min-width:260px; text-align:right; display:flex; flex-direction:column; justify-content:space-between; align-items:flex-end;">
+                                            <div
+                                                style="min-width:260px; text-align:right; display:flex; flex-direction:column; justify-content:space-between; align-items:flex-end;">
                                                 <div>
-                                                    <div style="font-size:13px;color:#111827;"><strong>Status:</strong> Mixed</div>
-                                                    <div style="font-size:12px;color:#6B7280;margin-top:6px;">Contracts: 12</div>
-                                                    <div style="font-size:12px;color:#6B7280;margin-top:6px;">Total FY value: AUD 420,000</div>
+                                                    <div style="font-size:13px;color:#111827;"><strong>Status:</strong>
+                                                        Mixed</div>
+                                                    <div style="font-size:12px;color:#6B7280;margin-top:6px;">Contracts:
+                                                        12</div>
+                                                    <div style="font-size:12px;color:#6B7280;margin-top:6px;">Total FY
+                                                        value: AUD 420,000</div>
                                                 </div>
                                                 <div style="margin-top:8px;">
                                                     <button class="button-primary">View</button>
@@ -349,17 +785,25 @@
                                         <button class="accordion-toggle">▾</button>
                                     </div>
                                     <div class="accordion-content">
-                                        <div style="background:#fff;padding:12px;border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:flex-start;gap:16px;position:relative;">
+                                        <div
+                                            style="background:#fff;padding:12px;border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:flex-start;gap:16px;position:relative;">
                                             <div style="flex:1;min-width:220px;">
-                                                <div style="font-size:14px;font-weight:700;color:#111827;">Client Master Agreement</div>
-                                                <div style="font-size:13px;color:#374151;margin-top:6px;">Contract ID: CMA-2023-045</div>
-                                                <div style="font-size:12px;color:#6B7280;margin-top:8px;">Account Manager: Priya Singh</div>
+                                                <div style="font-size:14px;font-weight:700;color:#111827;">Client Master
+                                                    Agreement</div>
+                                                <div style="font-size:13px;color:#374151;margin-top:6px;">Contract ID:
+                                                    CMA-2023-045</div>
+                                                <div style="font-size:12px;color:#6B7280;margin-top:8px;">Account
+                                                    Manager: Priya Singh</div>
                                             </div>
-                                            <div style="min-width:260px;text-align:right; display:flex; flex-direction:column; justify-content:space-between; align-items:flex-end;">
+                                            <div
+                                                style="min-width:260px;text-align:right; display:flex; flex-direction:column; justify-content:space-between; align-items:flex-end;">
                                                 <div>
-                                                    <div style="font-size:13px;color:#111827;"><strong>Status:</strong> Active</div>
-                                                    <div style="font-size:12px;color:#6B7280;margin-top:6px;">Region: APAC</div>
-                                                    <div style="font-size:12px;color:#6B7280;margin-top:6px;">Next Review: 15-Mar-2026</div>
+                                                    <div style="font-size:13px;color:#111827;"><strong>Status:</strong>
+                                                        Active</div>
+                                                    <div style="font-size:12px;color:#6B7280;margin-top:6px;">Region:
+                                                        APAC</div>
+                                                    <div style="font-size:12px;color:#6B7280;margin-top:6px;">Next
+                                                        Review: 15-Mar-2026</div>
                                                 </div>
                                                 <div style="margin-top:8px;">
                                                     <button class="button-primary">View</button>
@@ -374,15 +818,21 @@
                                         <button class="accordion-toggle">▾</button>
                                     </div>
                                     <div class="accordion-content">
-                                        <div style="background:#fff;padding:12px;border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:flex-start;gap:16px;position:relative;">
+                                        <div
+                                            style="background:#fff;padding:12px;border-radius:4px;box-shadow:0 2px 4px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:flex-start;gap:16px;position:relative;">
                                             <div style="flex:1;min-width:220px;">
-                                                <div style="font-size:14px;font-weight:700;color:#111827;">Covers Foods - Distribution Agreement</div>
-                                                <div style="font-size:13px;color:#374151;margin-top:6px;">Account: Logistics</div>
-                                                <div style="font-size:12px;color:#6B7280;margin-top:8px;">Contract ID: COV-2026-011</div>
+                                                <div style="font-size:14px;font-weight:700;color:#111827;">Covers Foods
+                                                    - Distribution Agreement</div>
+                                                <div style="font-size:13px;color:#374151;margin-top:6px;">Account:
+                                                    Logistics</div>
+                                                <div style="font-size:12px;color:#6B7280;margin-top:8px;">Contract ID:
+                                                    COV-2026-011</div>
                                             </div>
-                                            <div style="min-width:260px;text-align:right; display:flex; flex-direction:column; justify-content:space-between; align-items:flex-end;">
+                                            <div
+                                                style="min-width:260px;text-align:right; display:flex; flex-direction:column; justify-content:space-between; align-items:flex-end;">
                                                 <div>
-                                                    <div style="font-size:13px;color:#111827;"><strong>Status:</strong> Pending</div>
+                                                    <div style="font-size:13px;color:#111827;"><strong>Status:</strong>
+                                                        Pending</div>
                                                 </div>
                                                 <div style="margin-top:8px;">
                                                     <button class="button-primary">View</button>
@@ -400,112 +850,117 @@
             <!-- Workflow View -->
             <div id="workflow-view" class="view flex-1 overflow-auto">
                 <div class="p-6">
-                        <div class="mb-6"><button class="button-primary" onclick="showNewWorkflow()">New Workflow</button></div>
-                        <div class="workflow-accordion">
-                            <div class="accordion-row">
-                                <div class="accordion-header">
-                                    <div class="accordion-title">Inbox (2)</div>
-                                    <button class="accordion-toggle">▾</button>
-                                </div>
-                                <div class="accordion-content">
-                                    <div class="workflow-item">
-                                        <div class="workflow-info">
-                                            <div class="workflow-title">Employment Contract - Onboarding</div>
-                                            <div class="workflow-subtitle">Contract: John Doe - Assigned: HR Team</div>
-                                            <div class="workflow-subtitle">Status: Awaiting Signature • Due: 15 Jan 2026</div>
-                                        </div>
-                                        <button class="button-primary">Open</button>
-                                    </div>
-
-                                    <div class="workflow-item">
-                                        <div class="workflow-info">
-                                            <div class="workflow-title">Supplier Agreement Review</div>
-                                            <div class="workflow-subtitle">Contract: Acme Supplies - Assigned: Procurement</div>
-                                            <div class="workflow-subtitle">Status: Pending Review • Due: 20 Jan 2026</div>
-                                        </div>
-                                        <button class="button-primary">Open</button>
-                                    </div>
-                                </div>
+                    <div class="mb-6"><button class="button-primary" onclick="showNewWorkflow()">New Workflow</button>
+                    </div>
+                    <div class="workflow-accordion">
+                        <div class="accordion-row">
+                            <div class="accordion-header">
+                                <div class="accordion-title">Inbox (2)</div>
+                                <button class="accordion-toggle">▾</button>
                             </div>
-
-                            <div class="accordion-row">
-                                <div class="accordion-header">
-                                    <div class="accordion-title">All (4)</div>
-                                    <button class="accordion-toggle">▾</button>
+                            <div class="accordion-content">
+                                <div class="workflow-item">
+                                    <div class="workflow-info">
+                                        <div class="workflow-title">Employment Contract - Onboarding</div>
+                                        <div class="workflow-subtitle">Contract: John Doe - Assigned: HR Team</div>
+                                        <div class="workflow-subtitle">Status: Awaiting Signature • Due: 15 Jan 2026
+                                        </div>
+                                    </div>
+                                    <button class="button-primary">Open</button>
                                 </div>
-                                <div class="accordion-content">
-                                    <div class="workflow-item">
-                                        <div class="workflow-info">
-                                            <div class="workflow-title">NDA Signing</div>
-                                            <div class="workflow-subtitle">Contract: NDA - Acme • Assigned: Legal</div>
-                                            <div class="workflow-subtitle">Status: Signed • Completed: 05 Jan 2026</div>
-                                        </div>
-                                        <button class="button-primary">View</button>
-                                    </div>
 
-                                    <div class="workflow-item">
-                                        <div class="workflow-info">
-                                            <div class="workflow-title">Service Agreement - SLA Review</div>
-                                            <div class="workflow-subtitle">Contract: Service Agreement #102 • Assigned: Ops</div>
-                                            <div class="workflow-subtitle">Status: Review Scheduled • 22 Jan 2026</div>
+                                <div class="workflow-item">
+                                    <div class="workflow-info">
+                                        <div class="workflow-title">Supplier Agreement Review</div>
+                                        <div class="workflow-subtitle">Contract: Acme Supplies - Assigned: Procurement
                                         </div>
-                                        <button class="button-primary">View</button>
+                                        <div class="workflow-subtitle">Status: Pending Review • Due: 20 Jan 2026</div>
                                     </div>
-
-                                    <div class="workflow-item">
-                                        <div class="workflow-info">
-                                            <div class="workflow-title">Lease Renewal Reminder</div>
-                                            <div class="workflow-subtitle">Contract: Lease - Unit 12 • Assigned: Facilities</div>
-                                            <div class="workflow-subtitle">Status: Reminder • 28 Jan 2026</div>
-                                        </div>
-                                        <button class="button-primary">View</button>
-                                    </div>
-
-                                    <div class="workflow-item">
-                                        <div class="workflow-info">
-                                            <div class="workflow-title">Beta - Start Date</div>
-                                            <div class="workflow-subtitle">Contract: Beta • Assigned: Project Lead</div>
-                                            <div class="workflow-subtitle">Status: Scheduled • 08 Jan 2026</div>
-                                        </div>
-                                        <button class="button-primary">View</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="accordion-row">
-                                <div class="accordion-header">
-                                    <div class="accordion-title">Approved (1)</div>
-                                    <button class="accordion-toggle">▾</button>
-                                </div>
-                                <div class="accordion-content">
-                                    <div class="workflow-item">
-                                        <div class="workflow-info">
-                                            <div class="workflow-title">IP License Agreement</div>
-                                            <div class="workflow-subtitle">Contract: IP-Lic-88 • Assigned: Legal</div>
-                                            <div class="workflow-subtitle">Status: Approved • Approved: 02 Jan 2026</div>
-                                        </div>
-                                        <button class="button-primary">View</button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="accordion-row">
-                                <div class="accordion-header">
-                                    <div class="accordion-title">Rejected (1)</div>
-                                    <button class="accordion-toggle">▾</button>
-                                </div>
-                                <div class="accordion-content">
-                                    <div class="workflow-item">
-                                        <div class="workflow-info">
-                                            <div class="workflow-title">Service Level Amendment</div>
-                                            <div class="workflow-subtitle">Contract: SLA-011 • Assigned: Product</div>
-                                            <div class="workflow-subtitle">Status: Rejected • Reason: Scope mismatch</div>
-                                        </div>
-                                        <button class="button-primary">View</button>
-                                    </div>
+                                    <button class="button-primary">Open</button>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="accordion-row">
+                            <div class="accordion-header">
+                                <div class="accordion-title">All (4)</div>
+                                <button class="accordion-toggle">▾</button>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="workflow-item">
+                                    <div class="workflow-info">
+                                        <div class="workflow-title">NDA Signing</div>
+                                        <div class="workflow-subtitle">Contract: NDA - Acme • Assigned: Legal</div>
+                                        <div class="workflow-subtitle">Status: Signed • Completed: 05 Jan 2026</div>
+                                    </div>
+                                    <button class="button-primary">View</button>
+                                </div>
+
+                                <div class="workflow-item">
+                                    <div class="workflow-info">
+                                        <div class="workflow-title">Service Agreement - SLA Review</div>
+                                        <div class="workflow-subtitle">Contract: Service Agreement #102 • Assigned: Ops
+                                        </div>
+                                        <div class="workflow-subtitle">Status: Review Scheduled • 22 Jan 2026</div>
+                                    </div>
+                                    <button class="button-primary">View</button>
+                                </div>
+
+                                <div class="workflow-item">
+                                    <div class="workflow-info">
+                                        <div class="workflow-title">Lease Renewal Reminder</div>
+                                        <div class="workflow-subtitle">Contract: Lease - Unit 12 • Assigned: Facilities
+                                        </div>
+                                        <div class="workflow-subtitle">Status: Reminder • 28 Jan 2026</div>
+                                    </div>
+                                    <button class="button-primary">View</button>
+                                </div>
+
+                                <div class="workflow-item">
+                                    <div class="workflow-info">
+                                        <div class="workflow-title">Beta - Start Date</div>
+                                        <div class="workflow-subtitle">Contract: Beta • Assigned: Project Lead</div>
+                                        <div class="workflow-subtitle">Status: Scheduled • 08 Jan 2026</div>
+                                    </div>
+                                    <button class="button-primary">View</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-row">
+                            <div class="accordion-header">
+                                <div class="accordion-title">Approved (1)</div>
+                                <button class="accordion-toggle">▾</button>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="workflow-item">
+                                    <div class="workflow-info">
+                                        <div class="workflow-title">IP License Agreement</div>
+                                        <div class="workflow-subtitle">Contract: IP-Lic-88 • Assigned: Legal</div>
+                                        <div class="workflow-subtitle">Status: Approved • Approved: 02 Jan 2026</div>
+                                    </div>
+                                    <button class="button-primary">View</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-row">
+                            <div class="accordion-header">
+                                <div class="accordion-title">Rejected (1)</div>
+                                <button class="accordion-toggle">▾</button>
+                            </div>
+                            <div class="accordion-content">
+                                <div class="workflow-item">
+                                    <div class="workflow-info">
+                                        <div class="workflow-title">Service Level Amendment</div>
+                                        <div class="workflow-subtitle">Contract: SLA-011 • Assigned: Product</div>
+                                        <div class="workflow-subtitle">Status: Rejected • Reason: Scope mismatch</div>
+                                    </div>
+                                    <button class="button-primary">View</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -530,7 +985,8 @@
             <div id="new-event-view" class="view flex-1 overflow-auto">
                 <div class="p-6">
                     <div class="mb-4">
-                        <button class="button-primary" style="background:#10b981;padding:8px 14px;">New Event</button>
+                        <button class="button-primary" style="background:#10b981;padding:8px 14px;"
+                            onclick="switchView('create-event')">New Event</button>
                     </div>
 
                     <div id="eventsListSection" class="mb-6">
@@ -588,6 +1044,146 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Create Event View -->
+            <div id="create-event-view" class="view flex-1 overflow-auto bg-[#F3F4F6]">
+                <div class="p-4">
+                    <div class="flex gap-2 mb-6">
+                        <button
+                            class="bg-[#EF4444] text-white px-6 py-2 rounded-md text-sm font-semibold hover:bg-red-600 transition-colors"
+                            onclick="switchView('events')">Back</button>
+                        <button
+                            class="bg-[#22C55E] text-white px-6 py-2 rounded-md text-sm font-semibold hover:bg-green-600 transition-colors">Save
+                            Event</button>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                        <!-- Accordion Header -->
+                        <div class="flex items-center justify-between p-4 border-b border-gray-100 bg-white">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-[#7C3AED] w-10 h-10 rounded-full flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
+                                        </path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    </svg>
+                                </div>
+                                <span class="font-bold text-xl text-gray-800">General:</span>
+                            </div>
+                            <svg class="w-6 h-6 text-gray-800" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+
+                        <!-- Content Area -->
+                        <div class="p-6 bg-[#F3F4F6]">
+                            <div class="max-w-full">
+                                <div class="mb-6">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Event Title:</label>
+                                    <input type="text" placeholder="Enter a Event Title..."
+                                        class="w-full p-4 bg-white border border-gray-200 rounded-md outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-gray-700 shadow-sm">
+                                </div>
+
+                                <div class="mb-6">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Type:</label>
+                                    <input type="text" value="Custom" readonly
+                                        class="w-full p-4 bg-[#D1D5DB] border border-gray-300 rounded-md text-gray-600 cursor-not-allowed font-medium">
+                                </div>
+
+                                <div class="mb-6">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Link Contract:</label>
+                                    <div class="relative">
+                                        <select
+                                            class="w-full p-4 bg-white border border-gray-200 rounded-md outline-none appearance-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-gray-500 shadow-sm">
+                                            <option>Link a Contract...</option>
+                                        </select>
+                                        <div
+                                            class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                            <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                    clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-6">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Event
+                                            Date:</label>
+                                        <div class="flex gap-2">
+                                            <input type="text" value="13"
+                                                class="w-20 p-2 bg-white border border-gray-200 rounded-md text-center text-sm font-medium shadow-sm">
+                                            <select
+                                                class="flex-1 p-2 bg-white border border-gray-200 rounded-md text-sm font-medium shadow-sm">
+                                                <option>January</option>
+                                            </select>
+                                            <input type="text" value="2025"
+                                                class="w-24 p-2 bg-white border border-gray-200 rounded-md text-center text-sm font-medium shadow-sm">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Reminder
+                                            Date:</label>
+                                        <div class="flex gap-2">
+                                            <input type="text" value="13"
+                                                class="w-20 p-2 bg-white border border-gray-200 rounded-md text-center text-sm font-medium shadow-sm">
+                                            <select
+                                                class="flex-1 p-2 bg-white border border-gray-200 rounded-md text-sm font-medium shadow-sm">
+                                                <option>January</option>
+                                            </select>
+                                            <input type="text" value="2025"
+                                                class="w-24 p-2 bg-white border border-gray-200 rounded-md text-center text-sm font-medium shadow-sm">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-6">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Description:</label>
+                                    <textarea placeholder="Enter a Description..."
+                                        class="w-full p-4 bg-white border border-gray-200 rounded-md outline-none h-32 resize-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all text-gray-700 shadow-sm"></textarea>
+                                </div>
+
+                                <div class="mb-6">
+                                    <div class="flex items-center gap-4 mb-4">
+                                        <label class="text-sm font-semibold text-gray-700">Recipient List:</label>
+                                        <button
+                                            class="bg-[#22C55E] text-white px-6 py-2 rounded-md text-sm font-bold hover:bg-green-600 transition-colors">Add
+                                            Contact</button>
+                                    </div>
+                                    <div class="w-full h-80 bg-white border border-gray-200 rounded-md shadow-inner">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Reminder
+                                        frequency:</label>
+                                    <div class="relative max-w-xs">
+                                        <select
+                                            class="w-full p-3 bg-white border border-gray-200 rounded-md outline-none appearance-none text-sm text-gray-500 shadow-sm">
+                                            <option>- Select Frequency -</option>
+                                        </select>
+                                        <div
+                                            class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                            <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                    clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -612,14 +1208,18 @@
                 document.getElementById('new-event-view').classList.add('active');
                 items[3].classList.add('active');
                 document.querySelector('.header-title').textContent = 'Events';
+            } else if (viewName === 'create-event') {
+                document.getElementById('create-event-view').classList.add('active');
+                items[3].classList.add('active');
+                document.querySelector('.header-title').textContent = 'Events';
             }
         }
         function showNewWorkflow() { switchView('contracts'); document.getElementById('new-contract-view').classList.add('active'); }
         // Initialize default view
         switchView('dashboards');
-        
+
         // Chart setup for Contracts per Category
-        (function initCategoryChart(){
+        (function initCategoryChart() {
             const ctx = document.getElementById('categoryChart');
             if (!ctx) return;
             const data = {
@@ -636,9 +1236,9 @@
                     'Settlement and Release Agreements'
                 ],
                 datasets: [{
-                    data: [20,15,15,10,8,7,10,5,5,5],
-                    backgroundColor: ['#ef4444','#3b82f6','#f59e0b','#10b981','#7c3aed','#06b6d4','#f97316','#ef6aa6','#60a5fa','#84cc16'],
-                    hoverBackgroundColor: ['#dc2626','#2563eb','#d97706','#059669','#6d28d9','#0891b2','#ea580c','#db4d95','#3b82f6','#65a30d'],
+                    data: [20, 15, 15, 10, 8, 7, 10, 5, 5, 5],
+                    backgroundColor: ['#ef4444', '#3b82f6', '#f59e0b', '#10b981', '#7c3aed', '#06b6d4', '#f97316', '#ef6aa6', '#60a5fa', '#84cc16'],
+                    hoverBackgroundColor: ['#dc2626', '#2563eb', '#d97706', '#059669', '#6d28d9', '#0891b2', '#ea580c', '#db4d95', '#3b82f6', '#65a30d'],
                     borderWidth: 0
                 }]
             };
@@ -663,10 +1263,10 @@
                 const labels = chart.data.labels || [];
                 const bg = chart.data.datasets && chart.data.datasets[0] && chart.data.datasets[0].backgroundColor || [];
                 const values = chart.data.datasets && chart.data.datasets[0] && chart.data.datasets[0].data || [];
-                const total = values.reduce((s,v)=>s+Number(v||0),0) || 1;
+                const total = values.reduce((s, v) => s + Number(v || 0), 0) || 1;
                 labels.forEach((label, i) => {
                     const value = Number(values[i] || 0);
-                    const pct = Math.round((value/total)*1000)/10; // one decimal
+                    const pct = Math.round((value / total) * 1000) / 10; // one decimal
 
                     const item = document.createElement('div');
                     item.className = 'chart-legend-item';
@@ -698,8 +1298,8 @@
         })();
 
         // Accordion toggle for workflow sections (delegated + keyboard support)
-        (function wireWorkflowAccordion(){
-            document.addEventListener('click', function(e){
+        (function wireWorkflowAccordion() {
+            document.addEventListener('click', function (e) {
                 const header = e.target.closest('.accordion-header');
                 if (!header) return;
                 const row = header.parentElement;
@@ -708,7 +1308,7 @@
             });
 
             // Keyboard support: Enter or Space to toggle when header is focused
-            document.addEventListener('keydown', function(e){
+            document.addEventListener('keydown', function (e) {
                 if (e.key !== 'Enter' && e.key !== ' ') return;
                 const active = document.activeElement;
                 if (!active) return;
@@ -722,7 +1322,7 @@
         })();
 
         // Render structured placeholder events on the calendar and populate the event list
-        (function renderPlaceholderEvents(){
+        (function renderPlaceholderEvents() {
             const events = [
                 { day: 8, title: 'Beta - Start Date', contract: 'Contract: Beta', type: 'Start Date', color: '#0ea5a4', time: '09:00' },
                 { day: 13, title: 'Notice Event', contract: 'Contract: Legend', type: 'Notice', color: '#ef4444', time: 'All day' },
@@ -732,8 +1332,8 @@
             ];
 
             // helper: find calendar cell by day
-            function getDayCell(d){
-                return document.querySelector('.calendar-day[data-day="'+d+'"]');
+            function getDayCell(d) {
+                return document.querySelector('.calendar-day[data-day="' + d + '"]');
             }
 
             // make events accessible globally and place markers/tooltips on days
@@ -753,7 +1353,7 @@
                 // small badge if multiple events (simple count)
                 const existing = cell.querySelectorAll('.event-dot').length;
                 dot.className = 'event-dot';
-                if (existing > 0){
+                if (existing > 0) {
                     // show a tiny count badge instead
                     const badge = document.createElement('div');
                     badge.textContent = existing + 1;
@@ -772,10 +1372,10 @@
                 parentSection.appendChild(listWrap);
             }
 
-            function renderEventsList(day){
+            function renderEventsList(day) {
                 listWrap.innerHTML = '';
                 const dayEvents = (window.calendarEvents || []).filter(e => e.day === day);
-                if (!dayEvents.length){
+                if (!dayEvents.length) {
                     const note = document.createElement('div');
                     note.style.color = '#6B7280';
                     note.textContent = 'No events for this date.';
@@ -809,9 +1409,9 @@
             }
 
             // selection helper
-            function selectDay(day){
-                document.querySelectorAll('.calendar-day.selected-day').forEach(e=>e.classList.remove('selected-day'));
-                const cell = document.querySelector('.calendar-day[data-day="'+day+'"]');
+            function selectDay(day) {
+                document.querySelectorAll('.calendar-day.selected-day').forEach(e => e.classList.remove('selected-day'));
+                const cell = document.querySelector('.calendar-day[data-day="' + day + '"]');
                 if (cell) cell.classList.add('selected-day');
                 renderEventsList(day);
             }
@@ -826,13 +1426,13 @@
 
             // default select today's date if in this month/year, else select first event day
             const today = new Date();
-            const shownMonth = (document.getElementById('calendarMonth')||{}).textContent || '';
-            const shownYear = Number((document.getElementById('calendarYear')||{}).textContent) || today.getFullYear();
+            const shownMonth = (document.getElementById('calendarMonth') || {}).textContent || '';
+            const shownYear = Number((document.getElementById('calendarYear') || {}).textContent) || today.getFullYear();
             const monthIndex = new Date(shownMonth + ' 1, ' + shownYear).getMonth();
             const todayInShownMonth = (today.getFullYear() === shownYear && today.getMonth() === monthIndex);
-            if (todayInShownMonth && document.querySelector('.calendar-day[data-day="'+today.getDate()+'"]')){
+            if (todayInShownMonth && document.querySelector('.calendar-day[data-day="' + today.getDate() + '"]')) {
                 selectDay(today.getDate());
-            } else if (window.calendarEvents && window.calendarEvents.length){
+            } else if (window.calendarEvents && window.calendarEvents.length) {
                 selectDay(window.calendarEvents[0].day);
             }
 
@@ -840,12 +1440,12 @@
         })();
 
         // Render events list on the Events page and group them into accordion rows when possible
-        function renderEventsPage(){
+        function renderEventsPage() {
             const container = document.getElementById('eventsListSection');
             if (!container) return;
             container.innerHTML = '';
             const events = (window.calendarEvents || []).slice();
-            if (!events.length){
+            if (!events.length) {
                 const note = document.createElement('div');
                 note.style.color = '#6B7280';
                 note.textContent = 'No events available.';
@@ -895,7 +1495,7 @@
             });
 
             // helper to create an event card element
-            function createCard(ev){
+            function createCard(ev) {
                 const card = document.createElement('div');
                 card.style.background = '#fff';
                 card.style.borderRadius = '4px';
@@ -966,29 +1566,29 @@
                 const evContractLower = (ev.contract || '').toLowerCase();
                 const evTitleLower = (ev.title || '').toLowerCase();
                 let placed = false;
-                for (const row of accordionRows){
+                for (const row of accordionRows) {
                     const titleEl = row.querySelector('.accordion-title');
                     const contentEl = row.querySelector('.accordion-content');
                     if (!titleEl || !contentEl) continue;
                     const title = titleEl.textContent.trim().toLowerCase();
                     if (!title) continue;
                     // match by contract OR title containing the group title
-                    if (evContractLower.includes(title) || evTitleLower.includes(title)){
+                    if (evContractLower.includes(title) || evTitleLower.includes(title)) {
                         contentEl.appendChild(createCard(ev));
                         placed = true;
                         break;
                     }
                 }
 
-                if (!placed){
+                if (!placed) {
                     // find or create an 'Other' accordion row
                     let otherRow = accordionRows.find(r => {
                         const t = r.querySelector('.accordion-title');
                         return t && t.textContent.trim().toLowerCase() === 'other';
                     });
-                    if (!otherRow){
+                    if (!otherRow) {
                         const eventsAccordion = document.querySelector('#new-event-view .events-accordion');
-                        if (eventsAccordion){
+                        if (eventsAccordion) {
                             otherRow = document.createElement('div');
                             otherRow.className = 'accordion-row';
                             otherRow.innerHTML = '<div class="accordion-header"><div class="accordion-title">Other</div><button class="accordion-toggle">▾</button></div><div class="accordion-content"></div>';
@@ -997,7 +1597,7 @@
                             accordionRows.push(otherRow);
                         }
                     }
-                    if (otherRow){
+                    if (otherRow) {
                         const contentEl = otherRow.querySelector('.accordion-content');
                         if (contentEl) contentEl.appendChild(createCard(ev));
                     }
@@ -1008,7 +1608,7 @@
             accordionRows.forEach(r => {
                 const contentEl = r.querySelector('.accordion-content');
                 if (!contentEl) return;
-                if (contentEl.children.length > 0){
+                if (contentEl.children.length > 0) {
                     r.classList.add('open');
                     r.style.display = '';
                 } else {
@@ -1020,13 +1620,13 @@
 
         // Ensure Events page renders when switching to Events
         const originalSwitch = switchView;
-        window.switchView = function(viewName){
+        window.switchView = function (viewName) {
             originalSwitch(viewName);
             if (viewName === 'events') renderEventsPage();
         }
 
         // Initial render for events if view active
-        if (document.getElementById('new-event-view') && document.getElementById('new-event-view').classList.contains('active')){
+        if (document.getElementById('new-event-view') && document.getElementById('new-event-view').classList.contains('active')) {
             renderEventsPage();
         }
 
@@ -1034,4 +1634,5 @@
     </script>
 
 </body>
+
 </html>
