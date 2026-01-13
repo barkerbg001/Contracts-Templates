@@ -535,8 +535,15 @@
 
         <!-- Main Content -->
         <div class="flex-1 overflow-auto flex flex-col">
-            <div class="header-section">
+            <div class="header-section flex items-center justify-between">
                 <div class="header-title">Dashboard</div>
+                <div class="text-gray-400 cursor-pointer hover:text-gray-600 transition-colors"
+                    onclick="switchView('search')">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
             </div>
 
             <!-- Dashboards View -->
@@ -1590,6 +1597,162 @@
                 </div>
             </div>
 
+            <!-- Search View -->
+            <div id="search-view" class="view flex-1 overflow-auto bg-white">
+                <div class="p-6">
+                    <div class="relative mb-6">
+                        <input type="text" placeholder="Search Contracts..." value="Search Contracts..."
+                            class="w-full bg-[#FAFAFA] border-b border-gray-300 p-4 pl-0 text-sm italic text-gray-400 outline-none">
+                        <svg class="w-5 h-5 absolute right-0 top-4 text-gray-300" fill="none" stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+
+                    <!-- Contracts Section -->
+                    <div class="mb-8">
+                        <div class="bg-[#5C6BC0] text-white p-3 rounded-t-lg font-bold text-lg">Contracts</div>
+                        <div class="border border-gray-200 border-t-0 rounded-b-lg p-4 flex flex-col gap-3">
+                            <!-- Contract Row 1 -->
+                            <div
+                                class="border border-gray-200 rounded-md p-4 flex justify-between bg-white text-[13px]">
+                                <div class="flex flex-col gap-1">
+                                    <div>Title: <span class="text-gray-600">Master Services Agreement (MSA)</span></div>
+                                    <div>Business Unit: <span class="text-gray-600">Human Resources</span></div>
+                                </div>
+                                <div class="flex flex-col gap-1 text-right">
+                                    <div>Status: <span class="text-gray-600">Active</span></div>
+                                    <div>Supplier: <span class="text-gray-600">Shattered Glass Group PTY (Ltd)</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Contract Row 2 -->
+                            <div
+                                class="border border-gray-200 rounded-md p-4 flex justify-between bg-white text-[13px]">
+                                <div class="flex flex-col gap-1">
+                                    <div>Title: <span class="text-gray-600">Software License Renewal</span></div>
+                                    <div>Business Unit: <span class="text-gray-600">IT Operations</span></div>
+                                </div>
+                                <div class="flex flex-col gap-1 text-right">
+                                    <div>Status: <span class="text-gray-600">Active</span></div>
+                                    <div>Client: <span class="text-gray-600">Bateman Projects Ltd</span></div>
+                                </div>
+                            </div>
+                            <!-- Contract Row 3 -->
+                            <div
+                                class="border border-gray-200 rounded-md p-4 flex justify-between bg-white text-[13px]">
+                                <div class="flex flex-col gap-1">
+                                    <div>Title: <span class="text-gray-600">Intellectual Property Licensing</span></div>
+                                    <div>Business Unit: <span class="text-gray-600">Legal & Compliance</span></div>
+                                </div>
+                                <div class="flex flex-col gap-1 text-right">
+                                    <div>Status: <span class="text-gray-600">Active</span></div>
+                                    <div>Supplier: <span class="text-gray-600">Shutterstock Images</span></div>
+                                </div>
+                            </div>
+                            <!-- Contract Row 4 -->
+                            <div
+                                class="border border-gray-200 rounded-md p-4 flex justify-between bg-white text-[13px]">
+                                <div class="flex flex-col gap-1">
+                                    <div>Title: <span class="text-gray-600">Distribution & Logistics Contract</span>
+                                    </div>
+                                    <div>Business Unit: <span class="text-gray-600">Supply Chain</span></div>
+                                </div>
+                                <div class="flex flex-col gap-1 text-right">
+                                    <div>Status: <span class="text-gray-600">Active</span></div>
+                                    <div>Client: <span class="text-gray-600">Covers Foods</span></div>
+                                </div>
+                            </div>
+                            <!-- Contract Row 5 -->
+                            <div
+                                class="border border-gray-200 rounded-md p-4 flex justify-between bg-white text-[13px]">
+                                <div class="flex flex-col gap-1">
+                                    <div>Title: <span class="text-gray-600">Consulting Services Engagement</span></div>
+                                    <div>Business Unit: <span class="text-gray-600">Corporate Strategy</span></div>
+                                </div>
+                                <div class="flex flex-col gap-1 text-right">
+                                    <div>Status: <span class="text-gray-600">Active</span></div>
+                                    <div>Client: <span class="text-gray-600">Global Consulting Partners</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Events Section -->
+                    <div>
+                        <div class="bg-[#4FC3F7] text-white p-3 rounded-t-lg font-bold text-lg">Events</div>
+                        <div class="border border-gray-200 border-t-0 rounded-b-lg p-4 flex flex-col gap-3">
+                            <!-- Event Row 1 -->
+                            <div
+                                class="border border-gray-200 rounded-md p-4 flex justify-between bg-white text-[13px]">
+                                <div class="flex flex-col gap-1">
+                                    <div>Title: <span class="text-gray-600">MSA Renewal Kickoff</span></div>
+                                    <div>Description: <span class="text-gray-600">Reviewing terms for 2026
+                                            extension</span></div>
+                                </div>
+                                <div class="flex flex-col gap-1 text-right">
+                                    <div>Type: <span class="text-gray-600">Start Date</span></div>
+                                    <div>Reminder Date: <span class="text-gray-600">12/10/2025 09:00:00 AM</span></div>
+                                </div>
+                            </div>
+                            <!-- Event Row 2 -->
+                            <div
+                                class="border border-gray-200 rounded-md p-4 flex justify-between bg-white text-[13px]">
+                                <div class="flex flex-col gap-1">
+                                    <div>Title: <span class="text-gray-600">License Termination Notice</span></div>
+                                    <div>Description: <span class="text-gray-600">90-day window for Bateman
+                                            software</span></div>
+                                </div>
+                                <div class="flex flex-col gap-1 text-right">
+                                    <div>Type: <span class="text-gray-600">Notice Date</span></div>
+                                    <div>Reminder Date: <span class="text-gray-600">12/15/2025 10:30:00 AM</span></div>
+                                </div>
+                            </div>
+                            <!-- Event Row 3 -->
+                            <div
+                                class="border border-gray-200 rounded-md p-4 flex justify-between bg-white text-[13px]">
+                                <div class="flex flex-col gap-1">
+                                    <div>Title: <span class="text-gray-600">Facility Lease Expiry</span></div>
+                                    <div>Description: <span class="text-gray-600">Final walk-through and key
+                                            handover</span></div>
+                                </div>
+                                <div class="flex flex-col gap-1 text-right">
+                                    <div>Type: <span class="text-gray-600">End Date</span></div>
+                                    <div>Reminder Date: <span class="text-gray-600">12/28/2025 12:00:00 PM</span></div>
+                                </div>
+                            </div>
+                            <!-- Event Row 4 -->
+                            <div
+                                class="border border-gray-200 rounded-md p-4 flex justify-between bg-white text-[13px]">
+                                <div class="flex flex-col gap-1">
+                                    <div>Title: <span class="text-gray-600">Quarterly Performance Review</span></div>
+                                    <div>Description: <span class="text-gray-600">KPI evaluation for Covers Foods</span>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col gap-1 text-right">
+                                    <div>Type: <span class="text-gray-600">Performance Review</span></div>
+                                    <div>Reminder Date: <span class="text-gray-600">01/08/2026 02:00:00 PM</span></div>
+                                </div>
+                            </div>
+                            <!-- Event Row 5 -->
+                            <div
+                                class="border border-gray-200 rounded-md p-4 flex justify-between bg-white text-[13px]">
+                                <div class="flex flex-col gap-1">
+                                    <div>Title: <span class="text-gray-600">Security Audit Deadline</span></div>
+                                    <div>Description: <span class="text-gray-600">Compliance check for
+                                            SecuredEnterprise</span></div>
+                                </div>
+                                <div class="flex flex-col gap-1 text-right">
+                                    <div>Type: <span class="text-gray-600">Audit</span></div>
+                                    <div>Reminder Date: <span class="text-gray-600">01/15/2026 11:00:00 AM</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Events List View -->
             <div id="new-event-view" class="view flex-1 overflow-auto">
                 <div class="p-6">
@@ -1829,6 +1992,9 @@
                 document.getElementById('create-workflow-view').classList.add('active');
                 items[1].classList.add('active');
                 document.querySelector('.header-title').textContent = 'Workflow';
+            } else if (viewName === 'search') {
+                document.getElementById('search-view').classList.add('active');
+                document.querySelector('.header-title').textContent = 'Contracts';
             }
         }
         function showNewWorkflow() { switchView('create-workflow'); }
