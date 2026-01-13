@@ -77,6 +77,138 @@
         .view.active {
             display: block;
         }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 32px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #E5E7EB;
+            padding-bottom: 16px;
+        }
+        
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #111827;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #6B7280;
+            font-size: 24px;
+        }
+        
+        .modal-close:hover {
+            color: #111827;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: Inter, sans-serif;
+            transition: all 0.2s;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #0052FF;
+            box-shadow: 0 0 0 3px rgba(0, 82, 255, 0.1);
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+        
+        .btn-primary {
+            flex: 1;
+            padding: 12px 16px;
+            background-color: #0052FF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background-color: #0040CC;
+        }
+        
+        .btn-secondary {
+            flex: 1;
+            padding: 12px 16px;
+            background-color: #E5E7EB;
+            color: #374151;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #D1D5DB;
+        }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden">
@@ -113,6 +245,10 @@
             <div class="flex items-center justify-between">
                 <h1 class="text-2xl font-semibold text-gray-900" id="page-title">Dashboard</h1>
                 <div class="flex items-center space-x-4">
+                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2 data-action" onclick="openModal('createContractModal')">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        Create Contract
+                    </button>
                     <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors">
                         <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
                     </button>
@@ -659,6 +795,63 @@
             });
         });
         
+        // Modal Functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+        
+        // Close modal when clicking outside content
+        window.addEventListener('click', function(event) {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
+        
+        // Form Handlers
+        function handleContractSubmit(e) {
+            e.preventDefault();
+            alert('✓ Contract created successfully!');
+            document.getElementById('contractForm').reset();
+            closeModal('createContractModal');
+        }
+        
+        function handleWorkflowSubmit(e) {
+            e.preventDefault();
+            alert('✓ Workflow created successfully!');
+            document.getElementById('workflowForm').reset();
+            closeModal('createWorkflowModal');
+        }
+        
+        function handleEventSubmit(e) {
+            e.preventDefault();
+            alert('✓ Event created successfully!');
+            document.getElementById('eventForm').reset();
+            closeModal('createEventModal');
+        }
+        
+        // Wire up create buttons
+        const createContractBtns = document.querySelectorAll('[data-action="create-contract"]');
+        createContractBtns.forEach(btn => {
+            btn.addEventListener('click', () => openModal('createContractModal'));
+        });
+        
+        const createWorkflowBtns = document.querySelectorAll('[data-action="create-workflow"]');
+        createWorkflowBtns.forEach(btn => {
+            btn.addEventListener('click', () => openModal('createWorkflowModal'));
+        });
+        
+        const createEventBtns = document.querySelectorAll('[data-action="create-event"]');
+        createEventBtns.forEach(btn => {
+            btn.addEventListener('click', () => openModal('createEventModal'));
+        });
+        
         // Initialize Chart.js
         const ctx = document.getElementById('contractChart');
         if (ctx) {
@@ -705,5 +898,163 @@
             });
         }
     </script>
+    
+    <!-- Create Contract Modal -->
+    <div id="createContractModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Create New Contract</h2>
+                <button class="modal-close" onclick="closeModal('createContractModal')">×</button>
+            </div>
+            <form id="contractForm" onsubmit="handleContractSubmit(event)">
+                <div class="form-group">
+                    <label class="form-label">Contract Name</label>
+                    <input type="text" class="form-input" placeholder="e.g., Service Agreement with Acme Corp" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Counterparty</label>
+                    <input type="text" class="form-input" placeholder="Enter vendor/customer name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contract Type</label>
+                    <select class="form-select" required>
+                        <option value="">-- Select Type --</option>
+                        <option>Master Service Agreement</option>
+                        <option>Statement of Work</option>
+                        <option>NDA</option>
+                        <option>Vendor Agreement</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Effective Date</label>
+                        <input type="date" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Expiration Date</label>
+                        <input type="date" class="form-input" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Total Contract Value (R)</label>
+                    <input type="number" class="form-input" placeholder="Enter amount in Rand" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" placeholder="Add contract summary or key terms..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('createContractModal')">Cancel</button>
+                    <button type="submit" class="btn-primary">Create Contract</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Create Workflow Modal -->
+    <div id="createWorkflowModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Create Approval Workflow</h2>
+                <button class="modal-close" onclick="closeModal('createWorkflowModal')">×</button>
+            </div>
+            <form id="workflowForm" onsubmit="handleWorkflowSubmit(event)">
+                <div class="form-group">
+                    <label class="form-label">Workflow Name</label>
+                    <input type="text" class="form-input" placeholder="e.g., Standard Vendor Agreement Review" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Applies To</label>
+                    <select class="form-select" required>
+                        <option value="">-- Select --</option>
+                        <option>Contract Type</option>
+                        <option>Value Range</option>
+                        <option>Counterparty Type</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">First Approver</label>
+                    <input type="text" class="form-input" placeholder="e.g., Procurement Manager" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Conditional Routing Rules</label>
+                    <div style="background-color: #F3F4F6; padding: 12px; border-radius: 6px; margin-top: 8px;">
+                        <p style="font-size: 12px; font-weight: 600; color: #374151; margin-bottom: 8px;">Add conditions:</p>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <label style="font-size: 13px;">
+                                <input type="checkbox"> If value > R10M → route to CFO
+                            </label>
+                            <label style="font-size: 13px;">
+                                <input type="checkbox"> If data processing → GDPR review
+                            </label>
+                            <label style="font-size: 13px;">
+                                <input type="checkbox"> If IP-related → Legal review
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('createWorkflowModal')">Cancel</button>
+                    <button type="submit" class="btn-primary">Create Workflow</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Create Event Modal -->
+    <div id="createEventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Create Event / Obligation</h2>
+                <button class="modal-close" onclick="closeModal('createEventModal')">×</button>
+            </div>
+            <form id="eventForm" onsubmit="handleEventSubmit(event)">
+                <div class="form-group">
+                    <label class="form-label">Event Name</label>
+                    <input type="text" class="form-input" placeholder="e.g., Annual Compliance Audit" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Related Contract</label>
+                    <select class="form-select" required>
+                        <option value="">-- Select Contract --</option>
+                        <option>C-2024-1847: Master Services Agreement</option>
+                        <option>C-2024-1923: TechVendor Inc</option>
+                        <option>C-2024-2101: Global Supply Co</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Event Type</label>
+                    <select class="form-select" required>
+                        <option value="">-- Select --</option>
+                        <option>Obligation</option>
+                        <option>Renewal</option>
+                        <option>Milestone</option>
+                        <option>Review</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Due Date</label>
+                    <input type="date" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Assign To</label>
+                    <input type="text" class="form-input" placeholder="Enter team member or department" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-select" required>
+                        <option value="">-- Select --</option>
+                        <option>High</option>
+                        <option>Medium</option>
+                        <option>Low</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal('createEventModal')">Cancel</button>
+                    <button type="submit" class="btn-primary">Create Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

@@ -231,6 +231,78 @@
             color: white;
             border-color: #0078D4;
         }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 24px;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 14px;
+            color: #1F2937;
+            margin-bottom: 6px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: Inter, sans-serif;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #0078D4;
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+        }
+        
+        .form-textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #D1D5DB;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: Inter, sans-serif;
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-textarea:focus {
+            outline: none;
+            border-color: #0078D4;
+            box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -338,9 +410,15 @@
                 <div id="dashboard-section" class="section-visible">
                     <div class="p-6">
                         <!-- Page Header -->
-                        <div class="mb-8">
-                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Intelligence Dashboard</h1>
-                            <p class="text-sm text-gray-600">Command Center for contract portfolio analytics and risk intelligence</p>
+                        <div class="mb-8 flex justify-between items-start">
+                            <div>
+                                <h1 class="text-3xl font-bold text-gray-900 mb-2">Intelligence Dashboard</h1>
+                                <p class="text-sm text-gray-600">Command Center for contract portfolio analytics and risk intelligence</p>
+                            </div>
+                            <button onclick="document.getElementById('createContractModal').classList.add('active')" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                Create Contract
+                            </button>
                         </div>
                         
                         <!-- KPI Tiles -->
@@ -448,9 +526,15 @@
                 <!-- Obligation Monitor Section -->
                 <div id="obligations-section" class="section-hidden">
                     <div class="p-6">
-                        <div class="mb-8">
-                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Obligation Monitor</h1>
-                            <p class="text-sm text-gray-600">Post-execution obligations with fulfillment tracking and SLA monitoring</p>
+                        <div class="mb-8 flex justify-between items-start">
+                            <div>
+                                <h1 class="text-3xl font-bold text-gray-900 mb-2">Obligation Monitor</h1>
+                                <p class="text-sm text-gray-600">Post-execution obligations with fulfillment tracking and SLA monitoring</p>
+                            </div>
+                            <button onclick="document.getElementById('createObligationModal').classList.add('active')" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                Create Obligation
+                            </button>
                         </div>
                         
                         <!-- Filters -->
@@ -536,9 +620,15 @@
                 <!-- Global Repository Section -->
                 <div id="repository-section" class="section-hidden">
                     <div class="p-6">
-                        <div class="mb-8">
-                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Global Repository</h1>
-                            <p class="text-sm text-gray-600">Searchable, filterable contract repository with AI-extracted metadata</p>
+                        <div class="mb-8 flex justify-between items-start">
+                            <div>
+                                <h1 class="text-3xl font-bold text-gray-900 mb-2">Global Repository</h1>
+                                <p class="text-sm text-gray-600">Searchable, filterable contract repository with AI-extracted metadata</p>
+                            </div>
+                            <button onclick="document.getElementById('createContractModal').classList.add('active')" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                Create Contract
+                            </button>
                         </div>
                         
                         <!-- View Toggle -->
@@ -635,9 +725,15 @@
                 <!-- Workflows Section -->
                 <div id="workflows-section" class="section-hidden">
                     <div class="p-6">
-                        <div class="mb-8">
-                            <h1 class="text-3xl font-bold text-gray-900 mb-2">Rule-Based Workflows</h1>
-                            <p class="text-sm text-gray-600">Complex approval chains with conditional routing logic</p>
+                        <div class="mb-8 flex justify-between items-start">
+                            <div>
+                                <h1 class="text-3xl font-bold text-gray-900 mb-2">Rule-Based Workflows</h1>
+                                <p class="text-sm text-gray-600">Complex approval chains with conditional routing logic</p>
+                            </div>
+                            <button onclick="document.getElementById('createWorkflowModal').classList.add('active')" class="px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center gap-2">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                Create Workflow
+                            </button>
                         </div>
                         
                         <!-- Workflow Examples -->
@@ -740,6 +836,171 @@
         </div>
     </div>
     
+    <!-- Create Contract Modal -->
+    <div id="createContractModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Create New Contract</h2>
+                <button class="close-modal" onclick="document.getElementById('createContractModal').classList.remove('active')">
+                    <i data-lucide="x" class="w-6 h-6 text-gray-500 hover:text-gray-900"></i>
+                </button>
+            </div>
+            
+            <form id="contractForm">
+                <div class="form-group">
+                    <label class="form-label">Contract Name</label>
+                    <input type="text" class="form-input" placeholder="e.g., Service Agreement with Acme Corp">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Counterparty</label>
+                    <input type="text" class="form-input" placeholder="Enter vendor/customer name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contract Type</label>
+                    <select class="form-input">
+                        <option>Master Service Agreement</option>
+                        <option>Statement of Work</option>
+                        <option>NDA</option>
+                        <option>Vendor Agreement</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="form-group">
+                        <label class="form-label">Effective Date</label>
+                        <input type="date" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Expiration Date</label>
+                        <input type="date" class="form-input">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Total Contract Value (R)</label>
+                    <input type="number" class="form-input" placeholder="Enter amount in Rand">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" placeholder="Add contract summary..."></textarea>
+                </div>
+                <div class="flex gap-3 mt-8">
+                    <button type="button" class="flex-1 px-4 py-2 bg-gray-200 text-gray-900 rounded-lg font-medium hover:bg-gray-300" onclick="document.getElementById('createContractModal').classList.remove('active')">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">
+                        Create Contract
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Create Obligation Modal -->
+    <div id="createObligationModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Create Obligation</h2>
+                <button class="close-modal" onclick="document.getElementById('createObligationModal').classList.remove('active')">
+                    <i data-lucide="x" class="w-6 h-6 text-gray-500 hover:text-gray-900"></i>
+                </button>
+            </div>
+            
+            <form id="obligationForm">
+                <div class="form-group">
+                    <label class="form-label">Obligation Name</label>
+                    <input type="text" class="form-input" placeholder="e.g., Quarterly Business Review">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Related Contract</label>
+                    <select class="form-input">
+                        <option>-- Select Contract --</option>
+                        <option>C-2024-1847: Master Services Agreement</option>
+                        <option>C-2024-2101: Global Supply Co</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Due Date</label>
+                    <input type="date" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Assign To</label>
+                    <input type="text" class="form-input" placeholder="Team member or department">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select class="form-input">
+                        <option>High</option>
+                        <option>Medium</option>
+                        <option>Low</option>
+                    </select>
+                </div>
+                <div class="flex gap-3 mt-8">
+                    <button type="button" class="flex-1 px-4 py-2 bg-gray-200 text-gray-900 rounded-lg font-medium hover:bg-gray-300" onclick="document.getElementById('createObligationModal').classList.remove('active')">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">
+                        Create Obligation
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Create Workflow Modal -->
+    <div id="createWorkflowModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">Create Approval Workflow</h2>
+                <button class="close-modal" onclick="document.getElementById('createWorkflowModal').classList.remove('active')">
+                    <i data-lucide="x" class="w-6 h-6 text-gray-500 hover:text-gray-900"></i>
+                </button>
+            </div>
+            
+            <form id="workflowForm">
+                <div class="form-group">
+                    <label class="form-label">Workflow Name</label>
+                    <input type="text" class="form-input" placeholder="e.g., Standard Vendor Agreement Review">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Applies To</label>
+                    <select class="form-input">
+                        <option>Contract Type</option>
+                        <option>Value Range</option>
+                        <option>Counterparty Type</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">First Approver</label>
+                    <input type="text" class="form-input" placeholder="e.g., Procurement Manager">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Conditional Routing</label>
+                    <div class="bg-gray-50 p-3 rounded-lg text-sm text-gray-600">
+                        <p class="font-semibold text-gray-700 mb-2">Add conditions:</p>
+                        <div class="space-y-2 text-xs">
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2"> If value > R10M → CFO
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2"> If data processing → GDPR review
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" class="mr-2"> If IP-related → Legal review
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex gap-3 mt-8">
+                    <button type="button" class="flex-1 px-4 py-2 bg-gray-200 text-gray-900 rounded-lg font-medium hover:bg-gray-300" onclick="document.getElementById('createWorkflowModal').classList.remove('active')">
+                        Cancel
+                    </button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">
+                        Create Workflow
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <script>
         // Initialize Lucide Icons
         lucide.createIcons();
@@ -804,6 +1065,38 @@
                 }
             });
         }
+        
+        // Modal Handlers
+        document.getElementById('contractForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Contract created successfully!');
+            document.getElementById('createContractModal').classList.remove('active');
+            document.getElementById('contractForm').reset();
+        });
+        
+        document.getElementById('obligationForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Obligation created successfully!');
+            document.getElementById('createObligationModal').classList.remove('active');
+            document.getElementById('obligationForm').reset();
+        });
+        
+        document.getElementById('workflowForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Workflow created successfully!');
+            document.getElementById('createWorkflowModal').classList.remove('active');
+            document.getElementById('workflowForm').reset();
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                }
+            });
+        });
     </script>
 </body>
 </html>
