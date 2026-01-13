@@ -56,6 +56,7 @@
         .calendar-day:hover { background-color:#F5F5F5; }
         .calendar-day.today { background-color:#0052FF; color:white; font-weight:700; }
         .calendar-day.other-month { color:#CCC; }
+        .calendar-day.selected-day { outline:2px solid #0052FF; box-shadow:0 0 0 4px rgba(0,82,255,0.06); background-color:#E9F5FF; }
 
         .event-item { padding:12px; border-left:3px solid #0052FF; background-color:#F8F8F8; border-radius:2px; margin-bottom:12px; }
         .event-date { font-size:12px; color:#0052FF; font-weight:700; }
@@ -65,6 +66,13 @@
         .expiry-box { border:2px solid #E0E0E0; border-radius:4px; padding:16px; text-align:center; }
         .expiry-number { font-size:28px; font-weight:700; color:#0052FF; }
         .expiry-label { font-size:11px; color:#666; margin-top:8px; text-transform:uppercase; letter-spacing:0.3px; }
+        /* Accordion for workflow sections */
+        .accordion-header { background:#FFFFFF; padding:12px 14px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; box-shadow:0 1px 0 rgba(0,0,0,0.04); cursor:pointer; }
+        .accordion-title { font-weight:600; color:#111827; }
+        .accordion-toggle { background:transparent; border:none; font-size:18px; transform:rotate(0deg); transition:transform .18s; }
+        .accordion-row.open .accordion-toggle { transform:rotate(180deg); }
+        .accordion-content { display:none; padding:12px; margin-bottom:12px; border-radius:6px; background:#F8F8F8; }
+        .accordion-row.open .accordion-content { display:block; }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -134,14 +142,22 @@
             <!-- Dashboards View -->
             <div id="dashboards-view" class="view active flex-1 overflow-auto">
                 <div class="p-6">
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div class="stat-card">
-                            <div class="stat-label">Total Number of Contracts</div>
-                            <div class="stat-value">5</div>
+                    <div class="mb-6">
+                        <div style="background:linear-gradient(90deg,#0052FF 0%,#0067FF 100%); color:#fff; padding:12px 16px; border-radius:8px 8px 0 0; font-weight:600; font-size:18px; display:flex; justify-content:space-between; align-items:center;">
+                            <div>Contracts</div>
+                            <div style="transform:rotate(0deg);">▲</div>
                         </div>
-                        <div class="stat-card">
-                            <div class="stat-label">Number of Active Contracts</div>
-                            <div class="stat-value">5</div>
+                        <div class="section-content" style="border-radius:0 0 8px 8px; padding:18px;">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div class="stat-card" style="border-radius:8px; padding:24px;">
+                                    <div class="stat-label">Total Number of Contracts</div>
+                                    <div class="stat-value">5</div>
+                                </div>
+                                <div class="stat-card" style="border-radius:8px; padding:24px;">
+                                    <div class="stat-label">Number of Active Contracts</div>
+                                    <div class="stat-value">5</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -181,7 +197,7 @@
                     </div>
 
                     <div class="section-header">Calendar<span>▲</span></div>
-                    <div class="section-content">
+                    <div id="calendarSectionContent" class="section-content">
                         <div class="calendar-header">
                             <button class="text-gray-400" id="prevMonth">←</button>
                             <div>
@@ -242,10 +258,7 @@
                             <div class="calendar-day" data-day="31">31</div>
                         </div>
 
-                        <div class="mt-6">
-                            <div class="event-item"><div class="event-date">8 Jan 2026</div><div class="event-title" style="color:#0052FF;font-weight:700;">● beta - Start Date</div><div class="event-title">Start Date Event</div></div>
-                            <div class="event-item"><div class="event-date">13 Jan 2026</div><div class="event-title">Notice Event</div></div>
-                        </div>
+                        <!-- Filtered events list will be rendered here by JS -->
                     </div>
                 </div>
             </div>
@@ -273,13 +286,112 @@
             <!-- Workflow View -->
             <div id="workflow-view" class="view flex-1 overflow-auto">
                 <div class="p-6">
-                    <div class="mb-6"><button class="button-primary" onclick="showNewWorkflow()">New Workflow</button></div>
-                    <div class="section-header">All<span>▲</span></div>
-                    <div class="section-content mb-6">
-                        <div class="workflow-item"><div class="workflow-info"><div class="workflow-title">Another Test</div><div class="workflow-subtitle">Contract Title: legend</div><div class="workflow-subtitle">Status: Pending</div></div><button class="button-primary">View</button></div>
-                        <div class="workflow-item"><div class="workflow-info"><div class="workflow-title">Test 002</div><div class="workflow-subtitle">Contract Title: legend</div><div class="workflow-subtitle">Status: Rejected</div></div><button class="button-primary">View</button></div>
-                        <div class="workflow-item"><div class="workflow-info"><div class="workflow-title">John</div><div class="workflow-subtitle">Contract Title: beta</div><div class="workflow-subtitle">Status: Approved</div></div><button class="button-primary">View</button></div>
-                    </div>
+                        <div class="mb-6"><button class="button-primary" onclick="showNewWorkflow()">New Workflow</button></div>
+                        <div class="workflow-accordion">
+                            <div class="accordion-row">
+                                <div class="accordion-header">
+                                    <div class="accordion-title">Inbox (2)</div>
+                                    <button class="accordion-toggle">▾</button>
+                                </div>
+                                <div class="accordion-content">
+                                    <div class="workflow-item">
+                                        <div class="workflow-info">
+                                            <div class="workflow-title">Employment Contract - Onboarding</div>
+                                            <div class="workflow-subtitle">Contract: John Doe - Assigned: HR Team</div>
+                                            <div class="workflow-subtitle">Status: Awaiting Signature • Due: 15 Jan 2026</div>
+                                        </div>
+                                        <button class="button-primary">Open</button>
+                                    </div>
+
+                                    <div class="workflow-item">
+                                        <div class="workflow-info">
+                                            <div class="workflow-title">Supplier Agreement Review</div>
+                                            <div class="workflow-subtitle">Contract: Acme Supplies - Assigned: Procurement</div>
+                                            <div class="workflow-subtitle">Status: Pending Review • Due: 20 Jan 2026</div>
+                                        </div>
+                                        <button class="button-primary">Open</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-row">
+                                <div class="accordion-header">
+                                    <div class="accordion-title">All (4)</div>
+                                    <button class="accordion-toggle">▾</button>
+                                </div>
+                                <div class="accordion-content">
+                                    <div class="workflow-item">
+                                        <div class="workflow-info">
+                                            <div class="workflow-title">NDA Signing</div>
+                                            <div class="workflow-subtitle">Contract: NDA - Acme • Assigned: Legal</div>
+                                            <div class="workflow-subtitle">Status: Signed • Completed: 05 Jan 2026</div>
+                                        </div>
+                                        <button class="button-primary">View</button>
+                                    </div>
+
+                                    <div class="workflow-item">
+                                        <div class="workflow-info">
+                                            <div class="workflow-title">Service Agreement - SLA Review</div>
+                                            <div class="workflow-subtitle">Contract: Service Agreement #102 • Assigned: Ops</div>
+                                            <div class="workflow-subtitle">Status: Review Scheduled • 22 Jan 2026</div>
+                                        </div>
+                                        <button class="button-primary">View</button>
+                                    </div>
+
+                                    <div class="workflow-item">
+                                        <div class="workflow-info">
+                                            <div class="workflow-title">Lease Renewal Reminder</div>
+                                            <div class="workflow-subtitle">Contract: Lease - Unit 12 • Assigned: Facilities</div>
+                                            <div class="workflow-subtitle">Status: Reminder • 28 Jan 2026</div>
+                                        </div>
+                                        <button class="button-primary">View</button>
+                                    </div>
+
+                                    <div class="workflow-item">
+                                        <div class="workflow-info">
+                                            <div class="workflow-title">Beta - Start Date</div>
+                                            <div class="workflow-subtitle">Contract: Beta • Assigned: Project Lead</div>
+                                            <div class="workflow-subtitle">Status: Scheduled • 08 Jan 2026</div>
+                                        </div>
+                                        <button class="button-primary">View</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-row">
+                                <div class="accordion-header">
+                                    <div class="accordion-title">Approved (1)</div>
+                                    <button class="accordion-toggle">▾</button>
+                                </div>
+                                <div class="accordion-content">
+                                    <div class="workflow-item">
+                                        <div class="workflow-info">
+                                            <div class="workflow-title">IP License Agreement</div>
+                                            <div class="workflow-subtitle">Contract: IP-Lic-88 • Assigned: Legal</div>
+                                            <div class="workflow-subtitle">Status: Approved • Approved: 02 Jan 2026</div>
+                                        </div>
+                                        <button class="button-primary">View</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="accordion-row">
+                                <div class="accordion-header">
+                                    <div class="accordion-title">Rejected (1)</div>
+                                    <button class="accordion-toggle">▾</button>
+                                </div>
+                                <div class="accordion-content">
+                                    <div class="workflow-item">
+                                        <div class="workflow-info">
+                                            <div class="workflow-title">Service Level Amendment</div>
+                                            <div class="workflow-subtitle">Contract: SLA-011 • Assigned: Product</div>
+                                            <div class="workflow-subtitle">Status: Rejected • Reason: Scope mismatch</div>
+                                        </div>
+                                        <button class="button-primary">View</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                 </div>
             </div>
 
@@ -423,23 +535,136 @@
             }
         })();
 
-        // Highlight calendar event days and add small dot markers
-        (function markCalendarEvents(){
-            const eventDays = [8,13];
-            document.querySelectorAll('.calendar-day').forEach(el=>{
-                const day = Number(el.getAttribute('data-day'));
-                if (eventDays.includes(day)){
-                    el.style.position = 'relative';
-                    const dot = document.createElement('span');
-                    dot.style.width = '8px'; dot.style.height = '8px'; dot.style.borderRadius = '50%'; dot.style.background = '#EF4444';
-                    dot.style.position = 'absolute'; dot.style.right = '6px'; dot.style.top = '6px';
-                    el.appendChild(dot);
-                }
-                if (el.classList.contains('today')){
-                    el.style.boxShadow = '0 0 0 3px rgba(0,82,255,0.08)';
-                }
+        // Accordion toggle for workflow sections
+        (function wireWorkflowAccordion(){
+            document.querySelectorAll('.accordion-header').forEach(h => {
+                h.addEventListener('click', () => {
+                    const row = h.parentElement;
+                    row.classList.toggle('open');
+                });
             });
         })();
+
+        // Render structured placeholder events on the calendar and populate the event list
+        (function renderPlaceholderEvents(){
+            const events = [
+                { day: 8, title: 'Beta - Start Date', contract: 'Contract: Beta', type: 'Start Date', color: '#0ea5a4', time: '09:00' },
+                { day: 13, title: 'Notice Event', contract: 'Contract: Legend', type: 'Notice', color: '#ef4444', time: 'All day' },
+                { day: 22, title: 'SLA Review', contract: 'Service Agreement #102', type: 'Review', color: '#f97316', time: '14:00' },
+                { day: 28, title: 'Lease Renewal Reminder', contract: 'Lease - Unit 12', type: 'Reminder', color: '#7c3aed', time: 'All day' },
+                { day: 5, title: 'NDA Signing', contract: 'NDA - Acme', type: 'Signing', color: '#3b82f6', time: '11:30' }
+            ];
+
+            // helper: find calendar cell by day
+            function getDayCell(d){
+                return document.querySelector('.calendar-day[data-day="'+d+'"]');
+            }
+
+            // make events accessible globally and place markers/tooltips on days
+            window.calendarEvents = events;
+            events.forEach(ev => {
+                const cell = getDayCell(ev.day);
+                if (!cell) return;
+                cell.style.position = 'relative';
+
+                // color dot
+                const dot = document.createElement('span');
+                dot.style.width = '10px'; dot.style.height = '10px'; dot.style.borderRadius = '50%'; dot.style.background = ev.color;
+                dot.style.position = 'absolute'; dot.style.right = '6px'; dot.style.top = '6px';
+                dot.title = ev.title + ' - ' + ev.time;
+                cell.appendChild(dot);
+
+                // small badge if multiple events (simple count)
+                const existing = cell.querySelectorAll('.event-dot').length;
+                dot.className = 'event-dot';
+                if (existing > 0){
+                    // show a tiny count badge instead
+                    const badge = document.createElement('div');
+                    badge.textContent = existing + 1;
+                    badge.style.position = 'absolute'; badge.style.left = '6px'; badge.style.top = '6px'; badge.style.background = '#111827'; badge.style.color = '#fff'; badge.style.width = '18px'; badge.style.height = '18px'; badge.style.borderRadius = '4px'; badge.style.display = 'flex'; badge.style.alignItems = 'center'; badge.style.justifyContent = 'center'; badge.style.fontSize = '11px';
+                    cell.appendChild(badge);
+                }
+            });
+
+            // create or find event list container under the calendar
+            const parentSection = document.getElementById('calendarSectionContent');
+            let listWrap = parentSection.querySelector('#eventsListContainer');
+            if (!listWrap) {
+                listWrap = document.createElement('div');
+                listWrap.id = 'eventsListContainer';
+                listWrap.className = 'mt-6';
+                parentSection.appendChild(listWrap);
+            }
+
+            function renderEventsList(day){
+                listWrap.innerHTML = '';
+                const dayEvents = (window.calendarEvents || []).filter(e => e.day === day);
+                if (!dayEvents.length){
+                    const note = document.createElement('div');
+                    note.style.color = '#6B7280';
+                    note.textContent = 'No events for this date.';
+                    listWrap.appendChild(note);
+                    return;
+                }
+                dayEvents.forEach(ev => {
+                    const item = document.createElement('div');
+                    item.className = 'event-item';
+                    item.style.cursor = 'default';
+
+                    const date = document.createElement('div');
+                    date.className = 'event-date';
+                    date.textContent = ev.day + ' Jan 2026';
+
+                    const title = document.createElement('div');
+                    title.className = 'event-title';
+                    title.style.color = ev.color;
+                    title.style.fontWeight = '700';
+                    title.textContent = ev.title + ' (' + ev.type + ')';
+
+                    const details = document.createElement('div');
+                    details.style.marginTop = '6px';
+                    details.textContent = ev.contract + ' • ' + ev.time;
+
+                    item.appendChild(date);
+                    item.appendChild(title);
+                    item.appendChild(details);
+                    listWrap.appendChild(item);
+                });
+            }
+
+            // selection helper
+            function selectDay(day){
+                document.querySelectorAll('.calendar-day.selected-day').forEach(e=>e.classList.remove('selected-day'));
+                const cell = document.querySelector('.calendar-day[data-day="'+day+'"]');
+                if (cell) cell.classList.add('selected-day');
+                renderEventsList(day);
+            }
+
+            // wire calendar cell clicks to selection (not modal)
+            document.querySelectorAll('.calendar-day').forEach(cell => {
+                cell.addEventListener('click', () => {
+                    const day = Number(cell.getAttribute('data-day'));
+                    selectDay(day);
+                });
+            });
+
+            // default select today's date if in this month/year, else select first event day
+            const today = new Date();
+            const shownMonth = (document.getElementById('calendarMonth')||{}).textContent || '';
+            const shownYear = Number((document.getElementById('calendarYear')||{}).textContent) || today.getFullYear();
+            const monthIndex = new Date(shownMonth + ' 1, ' + shownYear).getMonth();
+            const todayInShownMonth = (today.getFullYear() === shownYear && today.getMonth() === monthIndex);
+            if (todayInShownMonth && document.querySelector('.calendar-day[data-day="'+today.getDate()+'"]')){
+                selectDay(today.getDate());
+            } else if (window.calendarEvents && window.calendarEvents.length){
+                selectDay(window.calendarEvents[0].day);
+            }
+
+            // No static/full event list appended here — filtered list is rendered via renderEventsList(day)
+        })();
+
+        // Modal removed: event details will be shown inline under the calendar instead.
     </script>
+
 </body>
 </html>
