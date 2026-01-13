@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contract Management Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+        body { background-color: #F5F5F5; color: #333; }
+        .sidebar { background-color: #2D2D2D; color: #FFFFFF; }
+        .sidebar-item { display:flex; align-items:center; gap:12px; padding:16px 20px; cursor:pointer; transition:all .2s; color:#B0B0B0; font-size:14px; }
+        .sidebar-item:hover { background-color:#3D3D3D; color:#FFFFFF; }
+        .sidebar-item.active { background-color:#0052CC; color:#FFFFFF; border-left:4px solid #0052CC; }
+        .sidebar-icon { width:24px; height:24px; }
+        .header-section { background-color:#FFFFFF; padding:20px; border-bottom:1px solid #E0E0E0; }
+        .header-title { font-size:24px; font-weight:700; color:#1A1A1A; }
+        .section-header { background:linear-gradient(90deg,#0052FF 0%,#0067FF 100%); color:white; padding:12px 20px; border-radius:4px 4px 0 0; font-weight:600; font-size:14px; display:flex; justify-content:space-between; align-items:center; }
+        .section-content { background-color:#FFFFFF; padding:20px; border:1px solid #E0E0E0; border-top:none; }
+        .stat-card { background:#FFFFFF; border:1px solid #E0E0E0; border-radius:4px; padding:20px; text-align:center; display:flex; flex-direction:column; gap:10px; }
+        .stat-value { font-size:28px; font-weight:700; color:#0052FF; }
+        .stat-label { font-size:12px; color:#666; font-weight:500; text-transform:uppercase; letter-spacing:.5px; }
+        .button-primary { background:#22C55E; color:white; padding:8px 16px; border-radius:4px; border:none; font-weight:600; font-size:12px; cursor:pointer; transition:background-color .2s; }
+        .button-primary:hover { background:#16A34A; }
+        .button-secondary { background:#EF4444; color:white; padding:8px 16px; border-radius:4px; border:none; font-weight:600; font-size:12px; cursor:pointer; transition:background-color .2s; }
+        .button-secondary:hover { background:#DC2626; }
+        .workflow-item { background:#FFFFFF; border:1px solid #E0E0E0; border-radius:4px; padding:16px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; }
+        .workflow-info { flex:1; }
+        .workflow-title { font-weight:600; color:#1A1A1A; margin-bottom:4px; }
+        .workflow-subtitle { font-size:12px; color:#666; }
+        .form-section { background:#FFFFFF; border:1px solid #E0E0E0; border-radius:4px; padding:20px; margin-bottom:20px; }
+        .form-group { margin-bottom:16px; }
+        .form-label { display:block; font-weight:600; font-size:12px; color:#1A1A1A; margin-bottom:8px; text-transform:uppercase; letter-spacing:.3px; }
+        .form-input, .form-select { width:100%; padding:10px 12px; border:1px solid #E0E0E0; border-radius:4px; font-size:13px; background:#FFFFFF; }
+        .form-input:focus, .form-select:focus { outline:none; border-color:#0052FF; box-shadow:0 0 0 3px rgba(0,82,255,.1); }
+        .view { display:none; }
+        .view.active { display:block; }
+
+        .legend-item { display:flex; align-items:center; gap:8px; font-size:12px; margin:8px 0; }
+        .legend-color { width:16px; height:16px; border-radius:2px; }
+        #chartLegend { flex:1; display:flex; flex-direction:column; justify-content:space-around; padding-left:16px; }
+        .chart-legend-item { display:flex; align-items:center; gap:10px; padding:6px 0; justify-content:space-between; }
+        .chart-legend-color { width:14px; height:14px; border-radius:3px; flex-shrink:0; }
+        .chart-legend-label { margin-left:8px; color:#111827; font-size:13px; flex:1; }
+        .chart-legend-value { margin-left:12px; color:#374151; font-size:13px; font-weight:600; }
+
+        .calendar-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+        .calendar-month { font-size:18px; font-weight:700; color:#0052FF; }
+
+        .calendar-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:8px; margin-bottom:20px; grid-auto-rows:44px; max-height:360px; overflow:auto; }
+        .calendar-weekday { text-align:center; font-weight:600; color:#0052FF; font-size:11px; text-transform:uppercase; padding:8px 0; }
+        .calendar-day { height:40px; display:flex; align-items:center; justify-content:center; border:1px solid #E0E0E0; border-radius:4px; cursor:pointer; font-size:12px; background-color:#FFFFFF; transition:all .2s; position:relative; }
+        .calendar-day:hover { background-color:#F5F5F5; }
+        .calendar-day.today { background-color:#0052FF; color:white; font-weight:700; }
+        .calendar-day.other-month { color:#CCC; }
+
+        .event-item { padding:12px; border-left:3px solid #0052FF; background-color:#F8F8F8; border-radius:2px; margin-bottom:12px; }
+        .event-date { font-size:12px; color:#0052FF; font-weight:700; }
+        .event-title { font-size:13px; color:#1A1A1A; margin-top:4px; }
+
+        .expiry-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:12px; margin-top:20px; }
+        .expiry-box { border:2px solid #E0E0E0; border-radius:4px; padding:16px; text-align:center; }
+        .expiry-number { font-size:28px; font-weight:700; color:#0052FF; }
+        .expiry-label { font-size:11px; color:#666; margin-top:8px; text-transform:uppercase; letter-spacing:0.3px; }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar w-56 flex flex-col">
+            <div class="p-6 border-b border-gray-600">
+                <div class="flex items-center gap-2 text-white font-bold text-lg">
+                    <div class="bg-blue-500 rounded px-2 py-1">CM</div>
+                    Contract Manager
+                </div>
+            </div>
+            <nav class="flex-1 overflow-y-auto">
+                <!-- Dashboards -->
+                <div class="sidebar-item active" onclick="switchView('dashboards')">
+                    <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    Dashboards
+                </div>
+                <!-- Workflow -->
+                <div class="sidebar-item" onclick="switchView('workflow')">
+                    <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="5" r="2"></circle>
+                        <line x1="12" y1="7" x2="12" y2="15"></line>
+                        <circle cx="8" cy="18" r="2"></circle>
+                        <circle cx="16" cy="18" r="2"></circle>
+                        <line x1="10" y1="16" x2="8" y2="16"></line>
+                        <line x1="14" y1="16" x2="16" y2="16"></line>
+                    </svg>
+                    Workflow
+                </div>
+                <!-- Contracts -->
+                <div class="sidebar-item" onclick="switchView('contracts')">
+                    <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="12" y1="13" x2="16" y2="13"></line>
+                        <line x1="12" y1="17" x2="16" y2="17"></line>
+                        <polyline points="9 13 8 12 7 13"></polyline>
+                        <polyline points="9 17 8 16 7 17"></polyline>
+                    </svg>
+                    Contracts
+                </div>
+                <!-- Events -->
+                <div class="sidebar-item" onclick="switchView('events')">
+                    <svg class="sidebar-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    Events
+                </div>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto flex flex-col">
+            <div class="header-section">
+                <div class="header-title">Dashboard</div>
+            </div>
+
+            <!-- Dashboards View -->
+            <div id="dashboards-view" class="view active flex-1 overflow-auto">
+                <div class="p-6">
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Number of Contracts</div>
+                            <div class="stat-value">5</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Number of Active Contracts</div>
+                            <div class="stat-value">5</div>
+                        </div>
+                    </div>
+
+                    <div class="section-header">Events<span>▲</span></div>
+                    <div class="section-content mb-6">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="stat-card">
+                                <div class="stat-label">Reminders The Next 12 Months</div>
+                                <div class="stat-value">15</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-label">Events The Next 12 Months</div>
+                                <div class="stat-value">15</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="section-header">Contracts per Category<span>▲</span></div>
+                    <div class="section-content mb-6">
+                        <div class="flex items-center gap-8">
+                            <div style="flex:1; min-width:320px; height:320px; display:flex; align-items:center; justify-content:center;">
+                                <canvas id="categoryChart" style="width:100%; height:100%;"></canvas>
+                            </div>
+                            <div id="chartLegend" aria-hidden="true"></div>
+                        </div>
+                    </div>
+
+                    <div class="section-header">Contract Expiry<span>▲</span></div>
+                    <div class="section-content mb-6">
+                        <div class="expiry-grid">
+                            <div class="expiry-box"><div class="expiry-number">5</div><div class="expiry-label">Expired</div></div>
+                            <div class="expiry-box"><div class="expiry-number">0</div><div class="expiry-label">Within 1 month</div></div>
+                            <div class="expiry-box"><div class="expiry-number">0</div><div class="expiry-label">Within 1 to 3 months</div></div>
+                            <div class="expiry-box"><div class="expiry-number">0</div><div class="expiry-label">Within 3 to 6 months</div></div>
+                            <div class="expiry-box"><div class="expiry-number">0</div><div class="expiry-label">Within 6 to 12 months</div></div>
+                        </div>
+                    </div>
+
+                    <div class="section-header">Calendar<span>▲</span></div>
+                    <div class="section-content">
+                        <div class="calendar-header">
+                            <button class="text-gray-400" id="prevMonth">←</button>
+                            <div>
+                                <div class="calendar-month" id="calendarMonth">January</div>
+                                <div style="text-align:center; color:#0052FF; font-weight:700;" id="calendarYear">2026</div>
+                            </div>
+                            <button class="text-gray-400" id="nextMonth">→</button>
+                        </div>
+
+                        <div class="calendar-grid" id="calendarGrid">
+                            <div class="calendar-weekday">SUN</div>
+                            <div class="calendar-weekday">MON</div>
+                            <div class="calendar-weekday">TUE</div>
+                            <div class="calendar-weekday">WED</div>
+                            <div class="calendar-weekday">THU</div>
+                            <div class="calendar-weekday">FRI</div>
+                            <div class="calendar-weekday">SAT</div>
+
+                            <!-- Simple static grid for Jan 2026 matching screenshot -->
+                            <div class="calendar-day other-month">28</div>
+                            <div class="calendar-day other-month">29</div>
+                            <div class="calendar-day other-month">30</div>
+                            <div class="calendar-day other-month">31</div>
+                            <div class="calendar-day" data-day="1">1</div>
+                            <div class="calendar-day" data-day="2">2</div>
+                            <div class="calendar-day" data-day="3">3</div>
+
+                            <div class="calendar-day" data-day="4">4</div>
+                            <div class="calendar-day" data-day="5">5</div>
+                            <div class="calendar-day" data-day="6">6</div>
+                            <div class="calendar-day" data-day="7">7</div>
+                            <div class="calendar-day" data-day="8">8</div>
+                            <div class="calendar-day" data-day="9">9</div>
+                            <div class="calendar-day" data-day="10">10</div>
+
+                            <div class="calendar-day" data-day="11">11</div>
+                            <div class="calendar-day" data-day="12">12</div>
+                            <div class="calendar-day" data-day="13">13</div>
+                            <div class="calendar-day" data-day="14">14</div>
+                            <div class="calendar-day" data-day="15">15</div>
+                            <div class="calendar-day" data-day="16">16</div>
+                            <div class="calendar-day" data-day="17">17</div>
+
+                            <div class="calendar-day" data-day="18">18</div>
+                            <div class="calendar-day" data-day="19">19</div>
+                            <div class="calendar-day" data-day="20">20</div>
+                            <div class="calendar-day" data-day="21">21</div>
+                            <div class="calendar-day" data-day="22">22</div>
+                            <div class="calendar-day" data-day="23">23</div>
+                            <div class="calendar-day" data-day="24">24</div>
+
+                            <div class="calendar-day" data-day="25">25</div>
+                            <div class="calendar-day" data-day="26">26</div>
+                            <div class="calendar-day" data-day="27">27</div>
+                            <div class="calendar-day" data-day="28">28</div>
+                            <div class="calendar-day" data-day="29">29</div>
+                            <div class="calendar-day" data-day="30">30</div>
+                            <div class="calendar-day" data-day="31">31</div>
+                        </div>
+
+                        <div class="mt-6">
+                            <div class="event-item"><div class="event-date">8 Jan 2026</div><div class="event-title" style="color:#0052FF;font-weight:700;">● beta - Start Date</div><div class="event-title">Start Date Event</div></div>
+                            <div class="event-item"><div class="event-date">13 Jan 2026</div><div class="event-title">Notice Event</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contracts View -->
+            <div id="contracts-view" class="view flex-1 overflow-auto">
+                <div class="p-6">
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="stat-card"><div class="stat-label">Total Number of Contracts</div><div class="stat-value">5</div></div>
+                        <div class="stat-card"><div class="stat-label">Number of Active Contracts</div><div class="stat-value">5</div></div>
+                    </div>
+                    <div class="section-header">Contract Expiry<span>▲</span></div>
+                    <div class="section-content mb-6">
+                        <div class="grid grid-cols-5 gap-3">
+                            <div class="stat-card"><div class="stat-value">5</div><div class="stat-label">Expired</div></div>
+                            <div class="stat-card"><div class="stat-value">0</div><div class="stat-label">Within 1 month</div></div>
+                            <div class="stat-card"><div class="stat-value">0</div><div class="stat-label">1 to 3 months</div></div>
+                            <div class="stat-card"><div class="stat-value">0</div><div class="stat-label">3 to 6 months</div></div>
+                            <div class="stat-card"><div class="stat-value">0</div><div class="stat-label">6 to 12 months</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workflow View -->
+            <div id="workflow-view" class="view flex-1 overflow-auto">
+                <div class="p-6">
+                    <div class="mb-6"><button class="button-primary" onclick="showNewWorkflow()">New Workflow</button></div>
+                    <div class="section-header">All<span>▲</span></div>
+                    <div class="section-content mb-6">
+                        <div class="workflow-item"><div class="workflow-info"><div class="workflow-title">Another Test</div><div class="workflow-subtitle">Contract Title: legend</div><div class="workflow-subtitle">Status: Pending</div></div><button class="button-primary">View</button></div>
+                        <div class="workflow-item"><div class="workflow-info"><div class="workflow-title">Test 002</div><div class="workflow-subtitle">Contract Title: legend</div><div class="workflow-subtitle">Status: Rejected</div></div><button class="button-primary">View</button></div>
+                        <div class="workflow-item"><div class="workflow-info"><div class="workflow-title">John</div><div class="workflow-subtitle">Contract Title: beta</div><div class="workflow-subtitle">Status: Approved</div></div><button class="button-primary">View</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Contract View -->
+            <div id="new-contract-view" class="view flex-1 overflow-auto">
+                <div class="p-6">
+                    <button class="button-secondary mb-6" onclick="switchView('workflow')">Back</button>
+                    <div class="form-section">
+                        <div class="form-label">Suppliers</div>
+                        <div class="stat-card">Shattered Glass Group PTY (Ltd)</div>
+                        <div class="stat-card">Fun Time</div>
+                    </div>
+                    <div class="form-section">
+                        <div class="form-label">Clients</div>
+                        <div class="stat-card">Bateman Projects Ltd</div>
+                        <div class="stat-card">Covers Foods</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- New Event View -->
+            <div id="new-event-view" class="view flex-1 overflow-auto">
+                <div class="p-6">
+                    <button class="button-secondary mb-6" onclick="switchView('dashboards')">Back</button>
+                    <div class="form-section">
+                        <div class="text-lg font-bold mb-4">General</div>
+                        <div class="form-group"><label class="form-label">Event Title</label><input type="text" class="form-input" placeholder="Enter a Event Title"></div>
+                        <div class="form-group"><label class="form-label">Type</label><select class="form-select"><option>Custom</option></select></div>
+                        <div class="form-group"><label class="form-label">Link Contract</label><select class="form-select"><option>Link a Contract</option></select></div>
+                        <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" placeholder="Enter a Description..." style="min-height:100px"></textarea></div>
+                    </div>
+                    <div class="flex gap-4 mb-6"><button class="button-secondary">Back</button><button class="button-primary">Save Event</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchView(viewName) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            const items = document.querySelectorAll('.sidebar-item');
+            if (viewName === 'dashboards') {
+                document.getElementById('dashboards-view').classList.add('active');
+                items[0].classList.add('active');
+                document.querySelector('.header-title').textContent = 'Dashboard';
+            } else if (viewName === 'workflow') {
+                document.getElementById('workflow-view').classList.add('active');
+                items[1].classList.add('active');
+                document.querySelector('.header-title').textContent = 'Workflow';
+            } else if (viewName === 'contracts') {
+                document.getElementById('contracts-view').classList.add('active');
+                items[2].classList.add('active');
+                document.querySelector('.header-title').textContent = 'Contracts';
+            } else if (viewName === 'events') {
+                document.getElementById('new-event-view').classList.add('active');
+                items[3].classList.add('active');
+                document.querySelector('.header-title').textContent = 'Events';
+            }
+        }
+        function showNewWorkflow() { switchView('contracts'); document.getElementById('new-contract-view').classList.add('active'); }
+        // Initialize default view
+        switchView('dashboards');
+        
+        // Chart setup for Contracts per Category
+        (function initCategoryChart(){
+            const ctx = document.getElementById('categoryChart');
+            if (!ctx) return;
+            const data = {
+                labels: [
+                    'Sales and Purchase Agreements',
+                    'Employment and HR Agreements',
+                    'Non-Disclosure Agreements (NDA)',
+                    'Intellectual Property Licenses',
+                    'Lease and Real Estate Agreements',
+                    'Partnership and Joint Venture Agreements',
+                    'Service-Level Agreements (SLA)',
+                    'Indemnity Agreements',
+                    'Franchise Agreements',
+                    'Settlement and Release Agreements'
+                ],
+                datasets: [{
+                    data: [20,15,15,10,8,7,10,5,5,5],
+                    backgroundColor: ['#ef4444','#3b82f6','#f59e0b','#10b981','#7c3aed','#06b6d4','#f97316','#ef6aa6','#60a5fa','#84cc16'],
+                    hoverBackgroundColor: ['#dc2626','#2563eb','#d97706','#059669','#6d28d9','#0891b2','#ea580c','#db4d95','#3b82f6','#65a30d'],
+                    borderWidth: 0
+                }]
+            };
+            const chart = new Chart(ctx, {
+                type: 'doughnut',
+                data: data,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '60%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: true }
+                    }
+                }
+            });
+
+            // Build a vertical HTML legend that fills the right block
+            const legendContainer = document.getElementById('chartLegend');
+            if (legendContainer) {
+                legendContainer.innerHTML = '';
+                const labels = chart.data.labels || [];
+                const bg = chart.data.datasets && chart.data.datasets[0] && chart.data.datasets[0].backgroundColor || [];
+                const values = chart.data.datasets && chart.data.datasets[0] && chart.data.datasets[0].data || [];
+                const total = values.reduce((s,v)=>s+Number(v||0),0) || 1;
+                labels.forEach((label, i) => {
+                    const value = Number(values[i] || 0);
+                    const pct = Math.round((value/total)*1000)/10; // one decimal
+
+                    const item = document.createElement('div');
+                    item.className = 'chart-legend-item';
+
+                    const left = document.createElement('div');
+                    left.style.display = 'flex';
+                    left.style.alignItems = 'center';
+
+                    const colorBox = document.createElement('span');
+                    colorBox.className = 'chart-legend-color';
+                    colorBox.style.background = bg[i] || '#ccc';
+
+                    const labelDiv = document.createElement('div');
+                    labelDiv.className = 'chart-legend-label';
+                    labelDiv.textContent = label;
+
+                    left.appendChild(colorBox);
+                    left.appendChild(labelDiv);
+
+                    const pctDiv = document.createElement('div');
+                    pctDiv.className = 'chart-legend-value';
+                    pctDiv.textContent = pct + '%';
+
+                    item.appendChild(left);
+                    item.appendChild(pctDiv);
+                    legendContainer.appendChild(item);
+                });
+            }
+        })();
+
+        // Highlight calendar event days and add small dot markers
+        (function markCalendarEvents(){
+            const eventDays = [8,13];
+            document.querySelectorAll('.calendar-day').forEach(el=>{
+                const day = Number(el.getAttribute('data-day'));
+                if (eventDays.includes(day)){
+                    el.style.position = 'relative';
+                    const dot = document.createElement('span');
+                    dot.style.width = '8px'; dot.style.height = '8px'; dot.style.borderRadius = '50%'; dot.style.background = '#EF4444';
+                    dot.style.position = 'absolute'; dot.style.right = '6px'; dot.style.top = '6px';
+                    el.appendChild(dot);
+                }
+                if (el.classList.contains('today')){
+                    el.style.boxShadow = '0 0 0 3px rgba(0,82,255,0.08)';
+                }
+            });
+        })();
+    </script>
+</body>
+</html>
