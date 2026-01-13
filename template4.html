@@ -526,18 +526,66 @@
                 </div>
             </div>
 
-            <!-- New Event View -->
+            <!-- Events List View -->
             <div id="new-event-view" class="view flex-1 overflow-auto">
                 <div class="p-6">
-                    <button class="button-secondary mb-6" onclick="switchView('dashboards')">Back</button>
-                    <div class="form-section">
-                        <div class="text-lg font-bold mb-4">General</div>
-                        <div class="form-group"><label class="form-label">Event Title</label><input type="text" class="form-input" placeholder="Enter a Event Title"></div>
-                        <div class="form-group"><label class="form-label">Type</label><select class="form-select"><option>Custom</option></select></div>
-                        <div class="form-group"><label class="form-label">Link Contract</label><select class="form-select"><option>Link a Contract</option></select></div>
-                        <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" placeholder="Enter a Description..." style="min-height:100px"></textarea></div>
+                    <div class="mb-4">
+                        <button class="button-primary" style="background:#10b981;padding:8px 14px;">New Event</button>
                     </div>
-                    <div class="flex gap-4 mb-6"><button class="button-secondary">Back</button><button class="button-primary">Save Event</button></div>
+
+                    <div id="eventsListSection" class="mb-6">
+                        <!-- Event cards rendered by JS -->
+                    </div>
+
+                    <div class="events-accordion">
+                        <div class="accordion-row">
+                            <div class="accordion-header">
+                                <div class="accordion-title">Shattered Glass Group PTY (Ltd)</div>
+                                <button class="accordion-toggle">▾</button>
+                            </div>
+                            <div class="accordion-content"></div>
+                        </div>
+
+                        <div class="accordion-row">
+                            <div class="accordion-header">
+                                <div class="accordion-title">Bateman Projects Ltd</div>
+                                <button class="accordion-toggle">▾</button>
+                            </div>
+                            <div class="accordion-content"></div>
+                        </div>
+
+                        <div class="accordion-row">
+                            <div class="accordion-header">
+                                <div class="accordion-title">Service Agreement #102</div>
+                                <button class="accordion-toggle">▾</button>
+                            </div>
+                            <div class="accordion-content"></div>
+                        </div>
+
+                        <div class="accordion-row">
+                            <div class="accordion-header">
+                                <div class="accordion-title">Lease - Unit 12</div>
+                                <button class="accordion-toggle">▾</button>
+                            </div>
+                            <div class="accordion-content"></div>
+                        </div>
+
+                        <div class="accordion-row">
+                            <div class="accordion-header">
+                                <div class="accordion-title">NDA - Acme</div>
+                                <button class="accordion-toggle">▾</button>
+                            </div>
+                            <div class="accordion-content"></div>
+                        </div>
+
+                        <div class="accordion-row">
+                            <div class="accordion-header">
+                                <div class="accordion-title">Other</div>
+                                <button class="accordion-toggle">▾</button>
+                            </div>
+                            <div class="accordion-content"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -790,6 +838,197 @@
 
             // No static/full event list appended here — filtered list is rendered via renderEventsList(day)
         })();
+
+        // Render events list on the Events page and group them into accordion rows when possible
+        function renderEventsPage(){
+            const container = document.getElementById('eventsListSection');
+            if (!container) return;
+            container.innerHTML = '';
+            const events = (window.calendarEvents || []).slice();
+            if (!events.length){
+                const note = document.createElement('div');
+                note.style.color = '#6B7280';
+                note.textContent = 'No events available.';
+                container.appendChild(note);
+                return;
+            }
+
+            // gather accordion rows and clear their contents
+            const accordionRows = Array.from(document.querySelectorAll('#new-event-view .events-accordion .accordion-row'));
+            accordionRows.forEach(r => {
+                const c = r.querySelector('.accordion-content');
+                if (c) c.innerHTML = '';
+            });
+
+            // Sample group data to display under each grouping by default
+            const sampleGroupData = {
+                'shattered glass group pty (ltd)': [
+                    { title: 'MSA Review Meeting', contract: 'Master Services Agreement (MSA)', type: 'Review', time: '10:00', color: '#06b6d4' },
+                    { title: 'MSA Renewal Planning', contract: 'Master Services Agreement (MSA)', type: 'Planning', time: '14:00', color: '#0ea5a4' }
+                ],
+                'bateman projects ltd': [
+                    { title: 'Client Onboarding', contract: 'Client Master Agreement', type: 'Onboarding', time: '11:00', color: '#3b82f6' }
+                ],
+                'service agreement #102': [
+                    { title: 'SLA Review', contract: 'Service Agreement #102', type: 'Review', time: '14:00', color: '#f97316' },
+                    { title: 'SLA Follow-up', contract: 'Service Agreement #102', type: 'Follow-up', time: '10:30', color: '#fb923c' }
+                ],
+                'lease - unit 12': [
+                    { title: 'Lease Renewal Reminder', contract: 'Lease - Unit 12', type: 'Reminder', time: 'All day', color: '#7c3aed' }
+                ],
+                'nda - acme': [
+                    { title: 'NDA Signing', contract: 'NDA - Acme', type: 'Signing', time: '11:30', color: '#3b82f6' }
+                ],
+                'other': [
+                    { title: 'General Review', contract: 'Contract: Misc', type: 'Review', time: '13:00', color: '#9CA3AF' }
+                ]
+            };
+
+            // Pre-populate each accordion row with sample items (so each grouping has different data underneath)
+            accordionRows.forEach(r => {
+                const titleEl = r.querySelector('.accordion-title');
+                const contentEl = r.querySelector('.accordion-content');
+                if (!titleEl || !contentEl) return;
+                const key = titleEl.textContent.trim().toLowerCase();
+                const samples = sampleGroupData[key] || [];
+                samples.forEach(s => contentEl.appendChild(createCard(s)));
+            });
+
+            // helper to create an event card element
+            function createCard(ev){
+                const card = document.createElement('div');
+                card.style.background = '#fff';
+                card.style.borderRadius = '4px';
+                card.style.boxShadow = '0 2px 4px rgba(0,0,0,0.06)';
+                card.style.padding = '12px';
+                card.style.marginBottom = '12px';
+                card.style.display = 'flex';
+                card.style.justifyContent = 'space-between';
+                card.style.alignItems = 'flex-start';
+
+                const left = document.createElement('div');
+                left.style.flex = '1';
+                left.style.minWidth = '220px';
+
+                const title = document.createElement('div');
+                title.style.fontSize = '14px';
+                title.style.fontWeight = '700';
+                title.style.color = '#111827';
+                title.textContent = ev.title || 'Untitled';
+
+                const desc = document.createElement('div');
+                desc.style.fontSize = '13px';
+                desc.style.color = '#374151';
+                desc.style.marginTop = '6px';
+                desc.textContent = ev.contract || '';
+
+                left.appendChild(title);
+                left.appendChild(desc);
+
+                const right = document.createElement('div');
+                right.style.minWidth = '260px';
+                right.style.textAlign = 'right';
+                right.style.display = 'flex';
+                right.style.flexDirection = 'column';
+                right.style.justifyContent = 'space-between';
+                right.style.alignItems = 'flex-end';
+
+                const type = document.createElement('div');
+                type.style.fontSize = '13px';
+                type.style.color = '#111827';
+                type.innerHTML = '<strong>Type:</strong> ' + (ev.type || 'Event');
+
+                const rem = document.createElement('div');
+                rem.style.fontSize = '12px';
+                rem.style.color = '#6B7280';
+                rem.style.marginTop = '6px';
+                rem.textContent = 'Reminder Date: ' + (ev.time === 'All day' ? '12/10/2025 12:00:00 AM' : ev.time);
+
+                const btnWrap = document.createElement('div');
+                btnWrap.style.marginTop = '8px';
+                const btn = document.createElement('button');
+                btn.className = 'button-primary';
+                btn.textContent = 'View';
+                btnWrap.appendChild(btn);
+
+                right.appendChild(type);
+                right.appendChild(rem);
+                right.appendChild(btnWrap);
+
+                card.appendChild(left);
+                card.appendChild(right);
+                return card;
+            }
+
+            // Place events into matching accordion rows if possible (match on contract text or title).
+            // If none match, place into an 'Other' accordion row (created if needed).
+            events.forEach(ev => {
+                const evContractLower = (ev.contract || '').toLowerCase();
+                const evTitleLower = (ev.title || '').toLowerCase();
+                let placed = false;
+                for (const row of accordionRows){
+                    const titleEl = row.querySelector('.accordion-title');
+                    const contentEl = row.querySelector('.accordion-content');
+                    if (!titleEl || !contentEl) continue;
+                    const title = titleEl.textContent.trim().toLowerCase();
+                    if (!title) continue;
+                    // match by contract OR title containing the group title
+                    if (evContractLower.includes(title) || evTitleLower.includes(title)){
+                        contentEl.appendChild(createCard(ev));
+                        placed = true;
+                        break;
+                    }
+                }
+
+                if (!placed){
+                    // find or create an 'Other' accordion row
+                    let otherRow = accordionRows.find(r => {
+                        const t = r.querySelector('.accordion-title');
+                        return t && t.textContent.trim().toLowerCase() === 'other';
+                    });
+                    if (!otherRow){
+                        const eventsAccordion = document.querySelector('#new-event-view .events-accordion');
+                        if (eventsAccordion){
+                            otherRow = document.createElement('div');
+                            otherRow.className = 'accordion-row';
+                            otherRow.innerHTML = '<div class="accordion-header"><div class="accordion-title">Other</div><button class="accordion-toggle">▾</button></div><div class="accordion-content"></div>';
+                            eventsAccordion.appendChild(otherRow);
+                            // update accordionRows so subsequent unmatched events go into this
+                            accordionRows.push(otherRow);
+                        }
+                    }
+                    if (otherRow){
+                        const contentEl = otherRow.querySelector('.accordion-content');
+                        if (contentEl) contentEl.appendChild(createCard(ev));
+                    }
+                }
+            });
+
+            // Auto-open any accordion row that now contains events and hide empty rows for clarity
+            accordionRows.forEach(r => {
+                const contentEl = r.querySelector('.accordion-content');
+                if (!contentEl) return;
+                if (contentEl.children.length > 0){
+                    r.classList.add('open');
+                    r.style.display = '';
+                } else {
+                    r.classList.remove('open');
+                    r.style.display = 'none';
+                }
+            });
+        }
+
+        // Ensure Events page renders when switching to Events
+        const originalSwitch = switchView;
+        window.switchView = function(viewName){
+            originalSwitch(viewName);
+            if (viewName === 'events') renderEventsPage();
+        }
+
+        // Initial render for events if view active
+        if (document.getElementById('new-event-view') && document.getElementById('new-event-view').classList.contains('active')){
+            renderEventsPage();
+        }
 
         // Modal removed: event details will be shown inline under the calendar instead.
     </script>
