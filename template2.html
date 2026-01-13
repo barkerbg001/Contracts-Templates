@@ -80,10 +80,6 @@
                     <i data-lucide="calendar" class="w-5 h-5"></i>
                     <span id="nav-events-text">Events</span>
                 </button>
-                <button class="nav-item w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-gray-700 hover:bg-gray-100" data-section="clickwrap">
-                    <i data-lucide="link" class="w-5 h-5"></i>
-                    <span id="nav-clickwrap-text">Clickwrap</span>
-                </button>
             </nav>
         </aside>
         
@@ -477,70 +473,6 @@
                     </div>
                 </section>
                 
-                <!-- Clickwrap Creator Section -->
-                <section id="clickwrap" class="section-content p-6 hidden">
-                    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-                        <div class="p-6 border-b border-gray-200">
-                            <h2 class="text-2xl font-semibold text-gray-900">Clickwrap Creator</h2>
-                            <p class="text-sm text-gray-500 mt-1">Generate public links for standardized agreements</p>
-                        </div>
-                        <div class="p-6">
-                            <div class="max-w-2xl">
-                                <div class="mb-6">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Agreement Type</label>
-                                    <select id="agreement-type" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent">
-                                        <option>Non-Disclosure Agreement (NDA)</option>
-                                        <option>Terms of Service (ToS)</option>
-                                        <option>Privacy Policy</option>
-                                        <option>Data Processing Agreement</option>
-                                    </select>
-                                </div>
-                                
-                                <div class="mb-6">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Agreement Title</label>
-                                    <input 
-                                        type="text" 
-                                        id="agreement-title" 
-                                        placeholder="e.g., Standard NDA for Partners"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent"
-                                    >
-                                </div>
-                                
-                                <div class="mb-6">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Expiration Date (Optional)</label>
-                                    <input 
-                                        type="date" 
-                                        id="expiration-date"
-                                        class="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0052FF] focus:border-transparent"
-                                    >
-                                </div>
-                                
-                                <button id="generate-link" class="w-full bg-[#0052FF] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#0040CC] transition-colors flex items-center justify-center gap-2">
-                                    <i data-lucide="link" class="w-5 h-5"></i>
-                                    Generate Public Link
-                                </button>
-                                
-                                <div id="generated-link-container" class="mt-6 hidden">
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Generated Public Link</label>
-                                    <div class="flex gap-2">
-                                        <input 
-                                            type="text" 
-                                            id="generated-link" 
-                                            readonly
-                                            class="flex-1 px-4 py-2.5 border border-gray-300 rounded-lg bg-gray-50 text-gray-700"
-                                            value="https://contracts.app/clickwrap/abc123xyz"
-                                        >
-                                        <button id="copy-link" class="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center gap-2">
-                                            <i data-lucide="copy" class="w-4 h-4"></i>
-                                            Copy
-                                        </button>
-                                    </div>
-                                    <p class="text-xs text-gray-500 mt-2">This link bypasses traditional signatures. Users accept by clicking "I Agree".</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </section>
             </div>
         </main>
     </div>
@@ -559,7 +491,7 @@
         const sidebarToggle = document.getElementById('sidebar-toggle');
         const logoText = document.getElementById('logo-text');
         const newContractText = document.getElementById('new-contract-text');
-        const navTexts = ['nav-repo-text', 'nav-workflow-text', 'nav-insights-text', 'nav-events-text', 'nav-clickwrap-text'];
+        const navTexts = ['nav-repo-text', 'nav-workflow-text', 'nav-insights-text', 'nav-events-text'];
         
         sidebarToggle.addEventListener('click', () => {
             sidebarCollapsed = !sidebarCollapsed;
@@ -715,22 +647,6 @@
                 }
             });
         }
-        
-        // Clickwrap Link Generator
-        const generateLinkBtn = document.getElementById('generate-link');
-        const generatedLinkContainer = document.getElementById('generated-link-container');
-        const copyLinkBtn = document.getElementById('copy-link');
-        const generatedLink = document.getElementById('generated-link');
-        
-        generateLinkBtn.addEventListener('click', () => {
-            const agreementType = document.getElementById('agreement-type').value;
-            const title = document.getElementById('agreement-title').value || 'Standard Agreement';
-            const randomId = Math.random().toString(36).substring(2, 11);
-            const link = `https://contracts.app/clickwrap/${randomId}`;
-            
-            generatedLink.value = link;
-            generatedLinkContainer.classList.remove('hidden');
-        });
         
         copyLinkBtn.addEventListener('click', () => {
             generatedLink.select();
